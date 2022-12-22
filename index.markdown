@@ -3,6 +3,7 @@ layout: page
 title: Что здесь находится?
 ---
 
+
 ## Учебные ресурсы
 
 - [Что такое спортпрога и с чем ее едят](https://algocode.ru/page/how_to_start/)
@@ -11,10 +12,12 @@ title: Что здесь находится?
 - [Algocode (Тинькофф)](https://wiki.algocode.ru/index.php?title=%D0%97%D0%B0%D0%B3%D0%BB%D0%B0%D0%B2%D0%BD%D0%B0%D1%8F_%D1%81%D1%82%D1%80%D0%B0%D0%BD%D0%B8%D1%86%D0%B0)
 - [cp-algorithms](https://cp-algorithms.com)
 
+
 ## Документация языков программирования
 
 - [Python](https://docs.python.org)
 - [C++](https://en.cppreference.com)
+
 
 ## Тренировки
 
@@ -24,8 +27,8 @@ title: Что здесь находится?
 
 > ⚠️ **Важно:** Для участия в тренировках уровня выше начального нужен аккаунт на [Codeforces](https://codeforces.com).
 
-
 Существует 3 уровня тренировок: для начинающих, продолжающих и ветеранов. Название контеста скажет вам, к какому из уровней он относится.
+
 
 #### Начальный уровень (pythontutor)
 
@@ -41,6 +44,7 @@ title: Что здесь находится?
 - [Множества](https://pythontutor.ru/lessons/sets/)
 - [Словари](https://pythontutor.ru/lessons/dicts/)
 
+
 #### Продолжающий уровень (Codeforces)
 
 - [Кровь, пот и стандартный ввод](https://codeforces.com/group/E7ZWhhsbc5/contest/385821)
@@ -48,9 +52,8 @@ title: Что здесь находится?
 - [Аннигиляторная пушка (циклотрон)](https://codeforces.com/group/E7ZWhhsbc5/contest/385823)
 - [[ЗАКРЫТ] Вызов принят: Саня Максимов](https://codeforces.com/gym/379815)
 
+
 #### Ветеранский уровень (Codeforces)
 
 - [Несложные задачи](https://codeforces.com/group/E7ZWhhsbc5/contest/385825)
 - [Фантастические гробы](https://codeforces.com/group/E7ZWhhsbc5/contest/395833)
-
-
