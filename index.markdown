@@ -1,5 +1,6 @@
 ---
 layout: page
+title: Что здесь находится?
 ---
 
 ## Учебные ресурсы
@@ -15,13 +16,41 @@ layout: page
 - [Python](https://docs.python.org)
 - [C++](https://en.cppreference.com)
 
-## Тренировки (Codeforces)
+## Тренировки
 
 [Группа на Codeforces с тренировками](https://codeforces.com/group/E7ZWhhsbc5/)
 
-> ⚠️ **Важно:** Для участия в тренировках нужен аккаунт на [Codeforces](https://codeforces.com).
+> ⚠️ **Важно:** Для участия в тренировках начального уровня нужен аккаунт на [PythonTutor](https://pythontutor.ru).
+
+> ⚠️ **Важно:** Для участия в тренировках уровня выше начального нужен аккаунт на [Codeforces](https://codeforces.com).
+
 
 Существует 3 уровня тренировок: для начинающих, продолжающих и ветеранов. Название контеста скажет вам, к какому из уровней он относится.
 
+#### Начальный уровень (pythontutor)
+
+- [Ввод и вывод](https://pythontutor.ru/lessons/inout_and_arithmetic_operations/)
+- [Условный оператор](https://pythontutor.ru/lessons/ifelse/)
+- [Математика](https://pythontutor.ru/lessons/int_and_float/)
+- [Цикл `for`](https://pythontutor.ru/lessons/for_loop/)
+- [Строки](https://pythontutor.ru/lessons/str/)
+- [Цикл `while`](https://pythontutor.ru/lessons/while/)
+- [Списки](https://pythontutor.ru/lessons/lists/)
+- [Функции и рекурсия](https://pythontutor.ru/lessons/functions/)
+- [Матрицы](https://pythontutor.ru/lessons/2d_arrays/)
+- [Множества](https://pythontutor.ru/lessons/sets/)
+- [Словари](https://pythontutor.ru/lessons/dicts/)
+
+#### Продолжающий уровень (Codeforces)
+
+- [Кровь, пот и стандартный ввод](https://codeforces.com/group/E7ZWhhsbc5/contest/385821)
+- [Строки, буквы, палиндромы](https://codeforces.com/group/E7ZWhhsbc5/contest/385824)
+- [Аннигиляторная пушка (циклотрон)](https://codeforces.com/group/E7ZWhhsbc5/contest/385823)
+- [[ЗАКРЫТ] Вызов принят: Саня Максимов](https://codeforces.com/gym/379815)
+
+#### Ветеранский уровень (Codeforces)
+
+- [Несложные задачи](https://codeforces.com/group/E7ZWhhsbc5/contest/385825)
+- [Фантастические гробы](https://codeforces.com/group/E7ZWhhsbc5/contest/395833)
 
 
