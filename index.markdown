@@ -31,7 +31,7 @@ title: Хаб спортпроги 1505
 Существует 3 уровня тренировок: для начинающих, продолжающих и ветеранов. Название контеста скажет вам, к какому из уровней он относится.
 
 
-#### Начальный уровень (pythontutor)
+#### Начальный уровень (PythonTutor)
 
 - [Ввод и вывод](https://pythontutor.ru/lessons/inout_and_arithmetic_operations/)
 - [Условный оператор](https://pythontutor.ru/lessons/ifelse/)
