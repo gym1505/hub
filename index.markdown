@@ -4,7 +4,7 @@ title: Хаб спортпроги 1505
 ---
 
 
-## Учебные ресурсы
+## **Учебные ресурсы**
 
 - [Что такое спортпрога и с чем ее едят](https://algocode.ru/page/how_to_start/)
 - [Algolympiad (работа Семена Шевкунова)](https://simonshevkunov.github.io/algolympiad.github.io/)
@@ -14,7 +14,7 @@ title: Хаб спортпроги 1505
 - [cp-algorithms](https://cp-algorithms.com)
 
 
-## Архивы задач и cоревнования
+## **Архивы задач и cоревнования**
 
 - [Codeforces (регулярные рейтинговые соревнования)](https://codeforces.com)
 - [Informatics (хорошее разбиение задач на темы, удобное тестирование)](https://informatics.msk.ru)
@@ -23,13 +23,13 @@ title: Хаб спортпроги 1505
 - [UVaOJ (очень крупный архив с задачами разной сложности)](https://onlinejudge.org)
 
 
-## Документация языков программирования
+## **Документация языков программирования**
 
 - [Python](https://docs.python.org)
 - [C++](https://en.cppreference.com)
 
 
-## Тренировки
+## **Тренировки**
 
 [Группа на Codeforces с тренировками](https://codeforces.com/group/E7ZWhhsbc5/)
 
@@ -71,7 +71,7 @@ title: Хаб спортпроги 1505
 - [Фантастические гробы](https://codeforces.com/group/E7ZWhhsbc5/contest/395833)
 
 
-## Полезные для изучения технологии (если хочется прокачаться в прикладном программировании)
+## **Полезные технологии**
 
 #### Markdown
 
@@ -91,7 +91,7 @@ LaTeX - язык разметки математических и химичес
 
 [Крутая инструкция по LaTeX](https://www.overleaf.com/learn/latex/Learn_LaTeX_in_30_minutes)
 
-## Прочее
+## **Прочее**
 
 #### Polygon
 
