@@ -15,6 +15,7 @@ plugins:
 remote_theme: jekyll/minima
 
 header_pages:
+  - methods.markdown
   - about.markdown
 
 minima:
