@@ -1,0 +1,20 @@
+<script>
+    let url = "https://codeforces.com/api/user.info?handles=";
+    let handles = "{{ include.cfhandles }}";
+    console.log(handles);
+    url = url + handles;
+    console.log(url);
+    async function load() {
+        let obj = await (await fetch(url)).json();
+        console.log(obj);
+        for (let cur_user of obj["result"]) {
+            let cur_handle = cur_user["handle"];
+            let user_rating = cur_user["rating"];
+            if (user_rating == undefined) {
+                user_rating = "не в рейтинге";
+            }
+            document.getElementById(cur_handle.toLowerCase()).innerHTML = document.getElementById(cur_handle.toLowerCase()).innerHTML.replace("загружаю рейтинг...", user_rating);
+        }
+    }
+    load();
+</script>

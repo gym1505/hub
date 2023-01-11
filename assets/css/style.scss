@@ -1,9 +1,7 @@
 ---
 ---
 
-@import
-  "minima/skins/dark",
-  "minima/initialize";
+@import "minima/skins/dark", "minima/initialize";
 
 blockquote {
     font-style: normal;
@@ -16,4 +14,40 @@ blockquote {
 
 body {
     font-family: 'PT Mono', monospace;
+}
+
+.cf-card {
+    background-color: #292929;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    border-radius: 3px;
+    align-items: center;
+}
+
+.cf-card-link a {
+    color: $text-color;
+}
+
+.cf-card-link a:hover {
+    text-decoration: none;
+}
+
+.cf-card-link {
+    transition: 0.3s;
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+.cf-card-link:hover {
+    transform: translate(-10px, 0);
+}
+
+.cf-card p {
+    margin: 10px;
+    padding: 0;
+}
+
+.status {
+    color: #959697
 }
