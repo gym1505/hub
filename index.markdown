@@ -60,14 +60,19 @@ title: Хаб спортпроги 1505
 
 > ❗ Вместо прямого перехода по ссылке копируйте ее и вставляйте в адресную строку браузера. По техническим причинам это единственный способ попасть в закрытые тренировки Codeforces.
 
-- [Кровь, пот и стандартный ввод](https://codeforces.com/group/E7ZWhhsbc5/contest/385821)
-- [Строки, буквы, палиндромы](https://codeforces.com/group/E7ZWhhsbc5/contest/385824)
-- [Аннигиляторная пушка (циклотрон)](https://codeforces.com/group/E7ZWhhsbc5/contest/385823)
-- [Ищем (бинпоиск, терпоиск)](https://codeforces.com/gym/420690)
+- [Стандартный ввод и простые операции](https://codeforces.com/group/E7ZWhhsbc5/contest/385821)
+- [Строки и массивы](https://codeforces.com/group/E7ZWhhsbc5/contest/385824)
+- [Циклы](https://codeforces.com/group/E7ZWhhsbc5/contest/385823)
+- [Бинпоиск, терпоиск)](https://codeforces.com/gym/420690)
+- [Динамическое программирование](https://codeforces.com/group/E7ZWhhsbc5/contest/421341)
+- [Теория графов](https://codeforces.com/group/E7ZWhhsbc5/contest/421337)
+- [Битовые операции](https://codeforces.com/group/E7ZWhhsbc5/contest/421335)
 - [[ЗАКРЫТ] Вызов принят: Саня Максимов](https://codeforces.com/gym/379815)
 
 
 #### Ветеранский уровень (Codeforces)
 
+- [Хеши](https://codeforces.com/group/E7ZWhhsbc5/contest/421340)
+- [Запросы на отрезках (префсуммы, ДО)](https://codeforces.com/group/E7ZWhhsbc5/contest/421338)
 - [Несложные задачи](https://codeforces.com/group/E7ZWhhsbc5/contest/385825)
 - [Фантастические гробы](https://codeforces.com/group/E7ZWhhsbc5/contest/395833)
