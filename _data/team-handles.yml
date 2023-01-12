@@ -2,6 +2,10 @@
   name: Александр Коняхин
   status: преп
 
+- handle: ad_red
+  name: Александр Максимов
+  status: создатель раундов
+
 - handle: masham
   name: Мария Мурашко
   status: старшая сборная
@@ -20,10 +24,6 @@
 
 - handle: syrexfn
   name: Антон Жданов
-  status: старшая сборная
-
-- handle: ad_red
-  name: Александр Максимов
   status: старшая сборная
 
 - handle: szymon_szewk
