@@ -9,7 +9,7 @@ blockquote {
 
 .site-header {
     border-top: none;
-    border-bottom: 3px solid $border-color-01;
+    border-bottom: 1px solid $border-color-01;
 }
 
 body {
@@ -49,5 +49,7 @@ body {
 }
 
 .status {
-    color: #959697
+    text-align: right;
+    color: #959697;
+    margin-left: 0;
 }
