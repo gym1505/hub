@@ -63,7 +63,7 @@ title: Хаб спортпроги 1505
 - [Стандартный ввод и простые операции](https://codeforces.com/group/E7ZWhhsbc5/contest/385821)
 - [Строки и массивы](https://codeforces.com/group/E7ZWhhsbc5/contest/385824)
 - [Циклы](https://codeforces.com/group/E7ZWhhsbc5/contest/385823)
-- [Бинпоиск, терпоиск)](https://codeforces.com/gym/420690)
+- [Бинпоиск, терпоиск](https://codeforces.com/gym/420690)
 - [Динамическое программирование](https://codeforces.com/group/E7ZWhhsbc5/contest/421341)
 - [Теория графов](https://codeforces.com/group/E7ZWhhsbc5/contest/421337)
 - [Битовые операции](https://codeforces.com/group/E7ZWhhsbc5/contest/421335)
