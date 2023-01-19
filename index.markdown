@@ -35,6 +35,8 @@ title: Хаб спортпроги 1505
 
 [Группа на Codeforces с тренировками](https://codeforces.com/group/E7ZWhhsbc5/)
 
+> ⚠️ **Важно:** Перед тем, как в первый раз заходить в тренировки Codeforces, зарегистрируйтесь в группе - заявка принимается автоматически Если вы уже состоите в группе "Гимназия 1505", делать ничего не нужно.
+
 Существует 3 уровня тренировок: для начинающих, продолжающих и ветеранов. Название контеста скажет вам, к какому из уровней он относится.
 
 
@@ -55,6 +57,21 @@ title: Хаб спортпроги 1505
 - [Словари](https://pythontutor.ru/lessons/dicts/)
 
 
+#### Продолжающий уровень (Informatics)
+
+> ⚠️ **Важно:** Для участия в тренировках начального уровня нужен аккаунт на [Informatics](https://informatics.msk.ru).
+
+> В этой категории находятся те задачи, которых нет на Codeforces. Поскольку переносить задачи на Codeforces - задача непростая, вы можете решать эти задачи прямо на Informatics.
+
+- [Бинпоиск по массиву](https://informatics.msk.ru/mod/statements/view.php?id=192#1)
+- [Бинпоиск по ответу](https://informatics.msk.ru/mod/statements/view.php?id=1966#1)
+- [Вещественный бинпоиск](https://informatics.msk.ru/mod/statements/view.php?id=3516#1)
+- [Простое ДП - 1](https://informatics.msk.ru/mod/statements/view.php?id=649#1)
+- [Простое ДП - 2](https://informatics.msk.ru/mod/statements/view.php?id=654#1)
+- [ДП на последовательностях](https://informatics.msk.ru/mod/statements/view.php?id=766#1)
+- [ДП - задача о рюкзаке, задача о банкомате](https://informatics.msk.ru/mod/statements/view.php?id=813#1)
+
+
 #### Продолжающий уровень (Codeforces)
 
 > ⚠️ **Важно:** Для участия в тренировках уровней выше начального нужен аккаунт на [Codeforces](https://codeforces.com).
@@ -70,6 +87,13 @@ title: Хаб спортпроги 1505
 - [Теория графов](https://codeforces.com/group/E7ZWhhsbc5/contest/421337)
 - [Битовые операции](https://codeforces.com/group/E7ZWhhsbc5/contest/421335)
 - [[ЗАКРЫТ] Вызов принят: Саня Максимов](https://codeforces.com/gym/379815)
+
+
+#### Ветеранский уровень (Informatics)
+
+- [Вычислительная геометрия](https://informatics.msk.ru/mod/statements/view.php?id=275#1)
+- [Хеши](https://informatics.msk.ru/mod/statements/view.php?id=241#1)
+- [ДП на подотрезках](https://informatics.msk.ru/mod/statements/view.php?id=1480#1)
 
 
 #### Ветеранский уровень (Codeforces)
