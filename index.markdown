@@ -30,6 +30,17 @@ title: Хаб спортпроги 1505
 
 - [Python](https://docs.python.org)
 - [C++](https://en.cppreference.com)
+- [Rust](https://doc.rust-lang.org/book/)
+- [Java (неофициальный туториал)](https://dev.java/learn/)
+
+
+## **Прочие полезные ссылки**
+
+- [Телеграм-бот для Codeforces](https://t.me/codeforces_live_bot)
+- [Аналитика профилей Codeforces (Chrome)](https://chrome.google.com/webstore/detail/cf-analytics/hhljbjodjdbjbggddjaidojnlmaobcpo)
+- [Прогнозы изменения рейтинга во время контеста (Chrome)](https://chrome.google.com/webstore/detail/carrot/gakohpplicjdhhfllilcjpfildodfnnn)
+- [Сервис для сравнения показателей пользователей Codeforces](https://cfviz.netlify.app/compare.html)
+- [Сервис для получения полезных задач для практики](https://recommender.codedrills.io/recommender)
 
 
 ## **Тренировки**
@@ -38,7 +49,7 @@ title: Хаб спортпроги 1505
 
 > ⚠️ **Важно:** Перед тем, как в первый раз заходить в тренировки Codeforces, зарегистрируйтесь в группе - заявка принимается автоматически. Если вы уже состоите в группе "Гимназия 1505", делать ничего не нужно.
 
-Существует 3 уровня тренировок: для начинающих, продолжающих и ветеранов. Название контеста скажет вам, к какому из уровней он относится.
+Существует 3 уровня тренировок: для начинающих, продолжающих и ветеранов. Буква в скобках в названии контеста подскажет, к какому из уровней он относится.
 
 
 #### Начальный уровень (PythonTutor)
