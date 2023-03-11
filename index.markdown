@@ -52,7 +52,7 @@ title: Хаб спортпроги 1505
 Существует 3 уровня тренировок: для начинающих, продолжающих и ветеранов. Буква в скобках в названии контеста подскажет, к какому из уровней он относится.
 
 
-#### Начальный уровень (PythonTutor)
+#### **Начальный уровень (PythonTutor)**
 
 > ⚠️ **Важно:** Для участия в тренировках начального уровня нужен аккаунт на [PythonTutor](https://pythontutor.ru).
 
@@ -69,7 +69,7 @@ title: Хаб спортпроги 1505
 - [Словари](https://pythontutor.ru/lessons/dicts/)
 
 
-#### Продолжающий уровень (Informatics)
+#### **Продолжающий уровень (Informatics)**
 
 > ⚠️ **Важно:** Для участия в тренировках начального уровня нужен аккаунт на [Informatics](https://informatics.msk.ru).
 
@@ -84,7 +84,7 @@ title: Хаб спортпроги 1505
 - [ДП - задача о рюкзаке, задача о банкомате](https://informatics.msk.ru/mod/statements/view.php?id=813#1)
 
 
-#### Продолжающий уровень (Codeforces)
+#### **Продолжающий уровень (Codeforces)**
 
 > ⚠️ **Важно:** Для участия в тренировках уровней выше начального нужен аккаунт на [Codeforces](https://codeforces.com).
 
@@ -101,14 +101,14 @@ title: Хаб спортпроги 1505
 - [[ЗАКРЫТ] Вызов принят: Саня Максимов](https://codeforces.com/gym/379815)
 
 
-#### Ветеранский уровень (Informatics)
+#### **Ветеранский уровень (Informatics)**
 
 - [Вычислительная геометрия](https://informatics.msk.ru/mod/statements/view.php?id=275#1)
 - [Хеши](https://informatics.msk.ru/mod/statements/view.php?id=241#1)
 - [ДП на подотрезках](https://informatics.msk.ru/mod/statements/view.php?id=1480#1)
 
 
-#### Ветеранский уровень (Codeforces)
+#### **Ветеранский уровень (Codeforces)**
 
 - [Хеши](https://codeforces.com/group/E7ZWhhsbc5/contest/421340)
 - [Запросы на отрезках (префсуммы, ДО)](https://codeforces.com/group/E7ZWhhsbc5/contest/421338)
