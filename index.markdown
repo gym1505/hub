@@ -40,7 +40,7 @@ title: Хаб спортпроги 1505
 - [Аналитика профилей Codeforces (Chrome)](https://chrome.google.com/webstore/detail/cf-analytics/hhljbjodjdbjbggddjaidojnlmaobcpo)
 - [Прогнозы изменения рейтинга во время контеста (Chrome)](https://chrome.google.com/webstore/detail/carrot/gakohpplicjdhhfllilcjpfildodfnnn)
 - [Сервис для сравнения показателей пользователей Codeforces](https://cfviz.netlify.app/compare.html)
-- [Сервис для получения полезных задач для практики](https://recommender.codedrills.io/recommender)
+- [Сервис для получения полезных задач для практики](https://asmaksimov2007.github.io/cf-recommender)
 
 
 ## **Тренировки**
