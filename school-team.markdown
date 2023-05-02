@@ -1,6 +1,7 @@
 ---
 layout: page
 title: Сборная гимназии 1505
+title_header: Сборная
 permalink: /team
 ---
 

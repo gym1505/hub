@@ -1,6 +1,7 @@
 ---
 layout: page
 title: О Хабе
+title_header: О Хабе
 permalink: /about
 ---
 

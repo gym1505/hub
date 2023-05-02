@@ -1,6 +1,7 @@
 ---
 layout: page
 title: Полезные технологии
+title_header: Технологии
 permalink: /methods
 ---
 
