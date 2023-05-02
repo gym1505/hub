@@ -15,6 +15,7 @@ plugins:
 remote_theme: gym1505/minima
 
 header_pages:
+  - recommender.markdown
   - school-team.markdown
   - methods.markdown
   - about.markdown
