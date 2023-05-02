@@ -1,0 +1,119 @@
+body {
+    font-family: 'Nunito', sans-serif;
+    background-color: #181818;
+}
+
+.head {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+    background-color: #292929;
+    border-radius: 5px;
+}
+
+h1, h2, h3, h4, h5, h6, b {
+    color: #bbbbbb;
+}
+
+.head h2 {
+    color: #bbbbbb;
+    font-size: 35px;
+}
+
+p {
+    display: inline;
+    color: #bbbbbb;
+}
+
+.handleblock {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin: 0;
+}
+
+.block {
+    margin-top: 20px;
+}
+
+.recent {
+    height: 100%;
+}
+
+#display_block {
+    display: none;
+}
+
+.accepted {
+    color: green;
+}
+
+.failed {
+    color: red;
+}
+
+.notattempted {
+    color: #bbbbbb;
+}
+
+.accepted, .failed, .notattempted {
+    font-size: 10px;
+}
+
+tr {
+    height: 10px;
+}
+
+.recommend {
+    font-size: 20px;
+}
+
+#alert_message {
+    display: none;
+    color: red;
+}
+
+.recommendations {
+    margin-top: 20px;
+    padding: 10px;
+}
+
+.card {
+    margin-top: 20px;
+    background-color: #292929;
+}
+
+h2.codeforces {
+    margin-top: 8px !important;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 40%;
+}
+
+.form-control {
+    margin-right: 10px;
+}
+
+span.badge {
+    font-size: 1rem;
+}
+
+a {
+    color: #3483eb;
+}
+
+a:hover {
+    color: #bbbbbb;
+}
+
+button {
+    background-color: #3483eb;
+}
+
+input {
+    background-color: #bbbbbb;
+}
