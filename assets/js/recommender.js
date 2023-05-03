@@ -442,8 +442,8 @@ function EMH(rating, usersubmits) {
                         }
                         var problem_url = get_prob_url + pset[idx].contestId.toString() + "/problem/" + pset[idx].index;
                         var problem_name = pset[idx].name;
-                        problem_name = problem_name.link(problem_url);
-                        card_div.innerHTML += "<p>" + ctr + ". </p>" + problem_name + "<p> (" + pset[idx].rating + ")</p><br>";
+                        // problem_name = problem_name.link(problem_url);
+                        card_div.innerHTML += "<p>" + ctr + ". </p>" + "<a href=" + problem_url + " target=_blank>" + problem_name + "</a>" + "<p> (" + pset[idx].rating + ")</p><br>";
                         set_of_prob.add(idx);
                         ctr++;
                     }
