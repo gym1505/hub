@@ -115,7 +115,7 @@ a:hover {
     color: #bbbbbb;
 }
 
-button {
+input.submit {
     background-color: #3483eb;
     margin: 0;
 }

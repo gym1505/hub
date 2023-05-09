@@ -14,7 +14,7 @@ var estimated_rating = 0;
 var tags = {};
 google.charts.load('current', { 'packages': ['corechart', 'calendar'] });
 
-var colors = ['#f44336', '#E91E63', '#9C27B0', '#673AB7', '#2196F3', '#009688',
+var googleChartColors = ['#f44336', '#E91E63', '#9C27B0', '#673AB7', '#2196F3', '#009688',
     '#8BC34A', '#CDDC39', '#FFC107', '#FF9800', '#FF5722', '#795548', '#607D8B', '#E65100',
     '#827717', '#004D40', '#1A237E', '#6200EA', '#3F51B5', '#F50057', '#304FFE', '#b71c1c'];
 
@@ -23,16 +23,6 @@ var colors = ['#f44336', '#E91E63', '#9C27B0', '#673AB7', '#2196F3', '#009688',
 function init() {
     problems_div = document.getElementById("problems");
     rating = document.getElementById("rank_display");
-
-    document.getElementById("handle_inp").addEventListener("keyup", function (event) {
-        // Number 13 is the "Enter" key on the keyboard
-        if (event.keyCode === 13) {
-            // Cancel the default action, if needed
-            event.preventDefault();
-            // Trigger the button element with a click
-            $('#display_values').click();
-        }
-    });
 }
 
 function initialize() {
@@ -78,7 +68,7 @@ class Contest {
         var l = rows.length;
         var n = problems.length;
 
-        this.List = [];
+        this.problems = [];
         for (var i = 0; i < n; i++) {
             var attempted = false;
             var success = false;
@@ -93,7 +83,7 @@ class Contest {
                 }
             }
 
-            this.List.push(new Problem(problems[i].index, problems[i].name, attempted, success))
+            this.problems.push(new Problem(problems[i].index, problems[i].name, attempted, success))
         }
     }
 }
@@ -148,7 +138,7 @@ function display_problem_list(contestId) {
     $.get('https://codeforces.com/api/contest.standings', { 'handles': handle, 'contestId': contestId, 'showUnofficial': true, 'lang': 'ru'})
         .done(function (data, status) {
             var contest = new Contest(data)
-            for (var x of contest.List) {
+            for (var x of contest.problems) {
                 $('#' + contestId).append('<tr class="' + x.css + '">' +
                     '<td>' + x.index + '</td>' +
                     '<td>' + x.name + '</td>' +
@@ -491,7 +481,7 @@ function drawCharts() {
         fontName: 'Nunito',
         backgroundColor: '#292929',
         color: '#bbbbbb',
-        colors: colors.slice(0, Math.min(colors.length, tags.getNumberOfRows())),
+        colors: googleChartColors.slice(0, Math.min(googleChartColors.length, tags.getNumberOfRows())),
     };
     var tagChart = new google.visualization.PieChart(document.getElementById('tags'));
     tagChart.draw(tags, tagOptions);
@@ -503,7 +493,14 @@ function drawCharts() {
 $(document).ready(function () {
     init();
 
-    $('#display_values').click(function () {
+    $('.form-control').keypress(function (e) {
+        if (e.which == 13) {
+          $('form.form-group').submit();
+          return false;
+        }
+    });
+
+    $('form.form-group').on("submit", function (event) {
         initialize();
         handle = $('#handle_inp').val()
         $.get(api_url + "user.rating", { 'handle': handle })
@@ -537,10 +534,7 @@ $(document).ready(function () {
                 $('#display_block').hide();
                 $('#alert_message').show();
             })
-    });
 
-    $('#view_more').click(function () {
-        view_more_fun();
-        $('#view_more').hide()
-    })
+        event.preventDefault();
+    });
 });
