@@ -3,23 +3,21 @@ body {
     background-color: #181818;
 }
 
-.head {
+header {
     display: flex;
     flex-direction: column;
     margin-top: 10px;
     padding: 0;
-    background-color: #292929;
-    border-radius: 5px;
     width: 80%;
+}
+
+header h2 {
+    color: #bbbbbb;
+    font-size: 35px;
 }
 
 h1, h2, h3, h4, h5, h6, b {
     color: #bbbbbb;
-}
-
-.head h2 {
-    color: #bbbbbb;
-    font-size: 35px;
 }
 
 p {
