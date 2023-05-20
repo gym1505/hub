@@ -1,6 +1,5 @@
 var contestList;
 const baseApiUrl = "https://codeforces.com/api/";
-var problemsDiv = 'none';
 var rating = 'none';
 var levels = [];
 var handle = 'none';
@@ -16,26 +15,20 @@ var googleChartColors = ['#f44336', '#E91E63', '#9C27B0', '#673AB7', '#2196F3', 
     '#827717', '#004D40', '#1A237E', '#6200EA', '#3F51B5', '#F50057', '#304FFE', '#b71c1c'];
 
 
-function findControlElements() {
-    problemsDiv = document.getElementById("problems");
-    rating = document.getElementById("rank_display");
-}
-
-
 function resetPage() {
     $('#handle_display').text(handle)
+
     $('#Easy').text('')
     $('#Medium').text('')
     $('#Hard').text('')
-
-    problemsDiv.innerHTML = '';
-    estimatedUserRating = 0;
-    tags = {};
 
     $('#rank_display').text("");
     $('#max_rating_display').text("");
     $('#max_rank_display').text("");
     $('#current_rank_display').text("");
+
+    estimatedUserRating = 0;
+    tags = {};
 }
 
 
@@ -150,9 +143,9 @@ function displayProblemsInContest(contestId) {
 
 
 function displayContests() {
-    var x, count = 0;
+    var count = 0;
     $('#contestlist *').remove()
-    for (x of contestList) {
+    for (var x of contestList) {
         if (++count > 3) break;
         $('#contestlist').append(
             '<div class="card">' +
@@ -171,7 +164,6 @@ function displayContests() {
 
 function alertMessageAndResetProblems(message) {
     alert(message);
-    problemsDiv.innerHTML = '';
 }
 
 
@@ -182,13 +174,17 @@ function getUserSubmissions(handle) {
     $.ajax({
         url: submissionsUrl,
         data: {
-            handle: handle
+            lang: "ru",
+            handle: handle,
         },
         type: 'get',
         dataType: 'json',
         async: false, // critical for the content to load before it is parsed
         success: function(data) {
             submissions = data.result; // unpacking and removing the status
+        },
+        fail: function(data) {
+            getUserSubmissions(handle);
         }
     });
 
@@ -218,28 +214,16 @@ function parseSubmissionsIntoTags(userSubmissions) {
     for (var i = 0; i < userSubmissions.length; i++) {
         if (userAttemptedProblems.includes(userSubmissions[i].problem.contestId + "_" + userSubmissions[i].problem.name)) continue;
         userAttemptedProblems.push(userSubmissions[i].problem.contestId + "_" + userSubmissions[i].problem.name); // Array of attempted problems, with problems defined as 'contestId_NameOfProb'
-        var probtag = userSubmissions[i].problem.tags; // All tags associated with the problem
-        for (var t = 0; t < probtag.length; t++) {
+        var currentProblemTags = userSubmissions[i].problem.tags; // All tags associated with the problem
+        for (var t = 0; t < currentProblemTags.length; t++) {
             if (userSubmissions[i].verdict == 'OK') {
-                if (userAcceptedTags[probtag[t]] === undefined) userAcceptedTags[probtag[t]] = 1;
-                else userAcceptedTags[probtag[t]]++;
+                if (userAcceptedTags[currentProblemTags[t]] === undefined) userAcceptedTags[currentProblemTags[t]] = 1;
+                else userAcceptedTags[currentProblemTags[t]]++;
             }
         }
     }
 
     return userAcceptedTags;
-}
-
-
-function displayChartAndProblems() {
-    var userSubmissions = getUserSubmissions(handle);
-
-    var userAttemptedProblems = parseAttemptedProblems(userSubmissions);
-    var userAcceptedTags = parseSubmissionsIntoTags(userSubmissions);
-
-    drawChart(userAcceptedTags);
-
-    displayProfileAndProblems(userAcceptedTags, userAttemptedProblems);
 }
 
 
@@ -252,30 +236,31 @@ function displayProfileAndProblems(userAttemptedProblems) {
     // Function which takes the set of attempted problems, and all the unique tags of problems attempted by user
     $.get(baseApiUrl + "user.info", { 'handles': handle , 'lang': 'ru'})
         .done(function (data, status) {
-            var status1 = data["status"];
-            if (status != "success" || status1 != "OK") {
+            if (status != "success" || data["status"] != "OK") {
                 alertMessageAndResetProblems("Проверьте подключение к интернету!");
                 return;
             }
 
             // Gets user rating
-            var curr_rating = data.result[0]["rating"];
-            var curr_rank = data.result[0]["rank"];
+            var currentRating = data.result[0]["rating"];
+            var currentRank = data.result[0]["rank"];
             var maxRating = data.result[0]["maxRating"];
-            var max_rank = data.result[0]["maxRank"];
+            var maxRank = data.result[0]["maxRank"];
             rating.innerHTML = '';
 
-            var rating_color = {"не в рейтинге": 'white',
-                                "новичок": 'gray',
-                                "ученик": 'green',
-                                "специалист": '#03a89e',
-                                "эксперт": 'blue',
-                                "кандидат в мастера": 'violet',
-                                "мастер": 'orange',
-                                "международный мастер": 'orange',
-                                "гроссмейстер": 'red',
-                                "международный гроссмейстер": 'red',
-                                "легендарный гроссмейстер": 'red'};
+            var rankColorReference = {
+                "не в рейтинге": 'white',
+                "новичок": 'gray',
+                "ученик": 'green',
+                "специалист": '#03a89e',
+                "эксперт": 'blue',
+                "кандидат в мастера": 'violet',
+                "мастер": 'orange',
+                "международный мастер": 'orange',
+                "гроссмейстер": 'red',
+                "международный гроссмейстер": 'red',
+                "легендарный гроссмейстер": 'red'
+            };
 
             if (contestList.length == 0) {
                 $('#rank_display').css('color', 'white').text("N/A");
@@ -283,10 +268,10 @@ function displayProfileAndProblems(userAttemptedProblems) {
                 $('#max_rank_display').css('color', 'white').text("");
                 $('#current_rank_display').css('color', 'white').text("(не в рейтинге)");
             } else {
-                $('#rank_display').css('color', rating_color[curr_rank]).text(curr_rating);
-                $('#max_rating_display').css('color', rating_color[max_rank]).text(maxRating);
-                $('#max_rank_display').css('color', rating_color[max_rank]).text("(" + capitalize(max_rank) + ")");
-                $('#current_rank_display').css('color', rating_color[curr_rank]).text("(" + capitalize(curr_rank) + ")");
+                $('#rank_display').css('color', rankColorReference[currentRank]).text(currentRating);
+                $('#max_rating_display').css('color', rankColorReference[maxRank]).text(maxRating);
+                $('#max_rank_display').css('color', rankColorReference[maxRank]).text("(" + capitalize(maxRank) + ")");
+                $('#current_rank_display').css('color', rankColorReference[currentRank]).text("(" + capitalize(currentRank) + ")");
             }
 
             // if the user is new, we give him a current rating of 800 to give problems 
@@ -308,57 +293,58 @@ function displayProblemCards(rating, userSubmits) {
     // Function to print recommended problems of all tags
     $.get(baseApiUrl + "problemset.problems")
         .done(function (data, status) {
-            var status1 = data["status"];
-            if (status != "success" || status1 != "OK") {
+            if (status != "success" || data["status"] != "OK") {
                 alertMessageAndResetProblems("Проверьте подключение к интернету!");
                 return;
             }
-            var pset = data.result.problems;
+            var completeProblemSet = data.result.problems;
             // A precautionary check, since we only pass those tags which the user has attempted, thus being sure that the tag itself exists!
-            if (pset.length == 0) {
+            if (completeProblemSet.length == 0) {
                 alertMessageAndResetProblems("Нет рекомендованных задач");
                 return;
             }
 
-            var totalNoProb = pset.length;
+            var totalNoProb = completeProblemSet.length;
             var setOfProb = new Set(); // To store and search the problems being recommended
             var getProblemUrl = "https://codeforces.com/contest/";
             var notAttemptedProblems = [];
 
             // Creates array of problems, of the tag provided in input, NOT attempted by the user
             for (var i = 0; i < totalNoProb; i++) {
-                if (!userSubmits.includes(pset[i].contestId + "_" + pset[i].name)) notAttemptedProblems.push(pset[i]);
+                if (!userSubmits.includes(completeProblemSet[i].contestId + "_" + completeProblemSet[i].name)) {
+                    notAttemptedProblems.push(completeProblemSet[i]);
+                }
             }
 
-            pset = notAttemptedProblems; // Modifies pset to contain only those problems NOT attempted by the user
-            totalNoProb = pset.length;
+            completeProblemSet = notAttemptedProblems; // Modifies completeProblemSet to contain only those problems NOT attempted by the user
+            totalNoProb = completeProblemSet.length;
 
-            level = ["Easy", "Medium", "Hard"];
+            problemDifficultyLevels = ["Easy", "Medium", "Hard"];
 
-            var round_rating = estimatedUserRating % 100
-            if (round_rating < 50) round_rating = estimatedUserRating - round_rating;
-            else round_rating = estimatedUserRating + 100 - round_rating;
+            var roundRatingDelta = estimatedUserRating % 100
+            if (roundRatingDelta < 50) roundRatingDelta = estimatedUserRating - roundRatingDelta;
+            else roundRatingDelta = estimatedUserRating + 100 - roundRatingDelta;
 
-            for (var index in level) {
+            for (var index in problemDifficultyLevels) {
                 var low, high;
                 if (index == 0) {
-                    low = easyLow(round_rating) + round_rating;
-                    high = easyHigh(round_rating) + round_rating;
+                    low = easyLow(roundRatingDelta) + roundRatingDelta;
+                    high = easyHigh(roundRatingDelta) + roundRatingDelta;
                 }
                 else if (index == 1) {
-                    low = mediumLow(round_rating) + round_rating;
-                    high = mediumHigh(round_rating) + round_rating;
+                    low = mediumLow(roundRatingDelta) + roundRatingDelta;
+                    high = mediumHigh(roundRatingDelta) + roundRatingDelta;
                 }
                 else {
-                    low = hardLow(round_rating) + round_rating;
-                    high = hardHigh(round_rating) + round_rating;
+                    low = hardLow(roundRatingDelta) + roundRatingDelta;
+                    high = hardHigh(roundRatingDelta) + roundRatingDelta;
                 }
 
                 // Generate five random problems
                 var checks = 0;
                 var ctr = 1;
 
-                var cardDiv = document.getElementById(level[index])
+                var cardDiv = document.getElementById(problemDifficultyLevels[index])
 
                 while (ctr <= Math.min(5, totalNoProb)) {
                     checks += 1;
@@ -368,16 +354,16 @@ function displayProblemCards(rating, userSubmits) {
                     }
                     // Generate a random index
                     var idx = Math.floor(Math.random() * totalNoProb);
-                    if (!setOfProb.has(idx) && pset[idx]["rating"] <= high && pset[idx]["rating"] >= low) {
+                    if (!setOfProb.has(idx) && completeProblemSet[idx]["rating"] <= high && completeProblemSet[idx]["rating"] >= low) {
                         if (ctr == 1) {
                             // Only print the heading if at least 1 problem of that rating is found in the problemset!
-                            var heading = '<h2 class="recommend"><u>' + level[index] + '</u>:</h2>';
+                            var heading = '<h2 class="recommend"><u>' + problemDifficultyLevels[index] + '</u>:</h2>';
                             cardDiv.innerHTML += heading;
                         }
-                        var problemUrl = getProblemUrl + pset[idx].contestId.toString() + "/problem/" + pset[idx].index;
-                        var problemName = pset[idx].name;
+                        var problemUrl = getProblemUrl + completeProblemSet[idx].contestId.toString() + "/problem/" + completeProblemSet[idx].index;
+                        var problemName = completeProblemSet[idx].name;
 
-                        cardDiv.innerHTML += "<p>" + ctr + ". </p>" + "<a href=" + problemUrl + " target=_blank>" + problemName + "</a>" + "<p> (" + pset[idx].rating + ")</p><br>";
+                        cardDiv.innerHTML += "<p>" + ctr + ". </p>" + "<a href=" + problemUrl + " target=_blank>" + problemName + "</a>" + "<p> (" + completeProblemSet[idx].rating + ")</p><br>";
                         setOfProb.add(idx);
                         ctr++;
                     }
@@ -414,7 +400,7 @@ function drawChart(userAcceptedTags) {
             position: 'right',
             alignment: 'center',
             textStyle: {
-                fontSize: 10,
+                fontSize: 12,
                 fontName: 'Nunito',
                 color: '#bbbbbb'
             }
@@ -434,7 +420,7 @@ function drawChart(userAcceptedTags) {
 
 
 $(document).ready(function () {
-    findControlElements();
+    rating = document.getElementById("rank_display");
 
     $('#handle-input').keypress(function (e) {
         if (e.which == 13) {
@@ -473,7 +459,14 @@ $(document).ready(function () {
 
                 estimatedUserRating = Math.round(estimatedUserRating);
 
-                displayChartAndProblems();
+                var userSubmissions = getUserSubmissions(handle);
+
+                var userAttemptedProblems = parseAttemptedProblems(userSubmissions);
+                var userAcceptedTags = parseSubmissionsIntoTags(userSubmissions);
+
+                drawChart(userAcceptedTags);
+
+                displayProfileAndProblems(userAcceptedTags, userAttemptedProblems);
                 displayContests();
             })
             .fail(function (data, status) {
