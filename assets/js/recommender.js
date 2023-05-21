@@ -26,6 +26,9 @@ function resetPage() {
     $('#max_rating_display').text("");
     $('#max_rank_display').text("");
     $('#current_rank_display').text("");
+    
+    $('#alert_message').hide();
+    $('#display_block').show();
 
     estimatedUserRating = 0;
     tags = {};
@@ -125,7 +128,7 @@ function hardHigh(x) {
 
 
 function displayProblemsInContest(contestId) {
-    $.get('https://codeforces.com/api/contest.standings', { 'handles': handle, 'contestId': contestId, 'showUnofficial': true, 'lang': 'ru'})
+    $.get(baseApiUrl + "contest.standings", { 'handles': handle, 'contestId': contestId, 'showUnofficial': true, 'lang': 'ru'})
         .done(function (data, status) {
             var contest = new Contest(data)
             for (var x of contest.problems) {
@@ -137,7 +140,7 @@ function displayProblemsInContest(contestId) {
             }
         })
         .fail(function (data, status) {
-            displayProblemsInContest(contestId)
+            displayProblemsInContest(contestId);
         })
 }
 
@@ -159,11 +162,6 @@ function displayContests() {
             '</div>');
         displayProblemsInContest(x.contestId);
     }
-}
-
-
-function alertMessageAndResetProblems(message) {
-    alert(message);
 }
 
 
@@ -232,148 +230,147 @@ function capitalize(str) {
 }
 
 
-function displayProfileAndProblems(userAttemptedProblems) {
-    // Function which takes the set of attempted problems, and all the unique tags of problems attempted by user
-    $.get(baseApiUrl + "user.info", { 'handles': handle , 'lang': 'ru'})
-        .done(function (data, status) {
-            if (status != "success" || data["status"] != "OK") {
-                alertMessageAndResetProblems("Проверьте подключение к интернету!");
-                return;
-            }
+function getUserInfo(handle) {
+    $.ajax({
+        url: baseApiUrl + "user.info",
+        data: {'handles': handle, 'lang': 'ru'},
+        type: 'get',
+        dataType: 'json',
+        async: false,
+        success: function(data, status) {
+            userInformationResponse = data.result;
+        },
+        fail: function(data, status) {
+            userInformationResponse = getUserInfo(handle);
+        }
+    });
 
-            // Gets user rating
-            var currentRating = data.result[0]["rating"];
-            var currentRank = data.result[0]["rank"];
-            var maxRating = data.result[0]["maxRating"];
-            var maxRank = data.result[0]["maxRank"];
-            rating.innerHTML = '';
-
-            var rankColorReference = {
-                "не в рейтинге": 'white',
-                "новичок": 'gray',
-                "ученик": 'green',
-                "специалист": '#03a89e',
-                "эксперт": 'blue',
-                "кандидат в мастера": 'violet',
-                "мастер": 'orange',
-                "международный мастер": 'orange',
-                "гроссмейстер": 'red',
-                "международный гроссмейстер": 'red',
-                "легендарный гроссмейстер": 'red'
-            };
-
-            if (contestList.length == 0) {
-                $('#rank_display').css('color', 'white').text("N/A");
-                $('#max_rating_display').css('color', 'white').text("N/A");
-                $('#max_rank_display').css('color', 'white').text("");
-                $('#current_rank_display').css('color', 'white').text("(не в рейтинге)");
-            } else {
-                $('#rank_display').css('color', rankColorReference[currentRank]).text(currentRating);
-                $('#max_rating_display').css('color', rankColorReference[maxRank]).text(maxRating);
-                $('#max_rank_display').css('color', rankColorReference[maxRank]).text("(" + capitalize(maxRank) + ")");
-                $('#current_rank_display').css('color', rankColorReference[currentRank]).text("(" + capitalize(currentRank) + ")");
-            }
-
-            // if the user is new, we give him a current rating of 800 to give problems 
-            if (currentRating < 800 || currentRating == undefined) {
-                currentRating = 800;
-                estimatedUserRating = 800;
-            }
-
-            displayProblemCards(currentRating, userAttemptedProblems);
-        })
-        .fail(function (data, status) {
-            // If it fails due to too frequent calls to the API (error 429), again call it
-            displayProfileAndProblems(userAttemptedProblems)
-        });
+    return userInformationResponse[0]; // берем только первого пользователя из массива длиной 1
 }
 
 
-function displayProblemCards(rating, userSubmits) {
+function displayUserProfile(userInformation) {
+    var currentRating = userInformation["rating"];
+    var currentRank = userInformation["rank"];
+    var maxRating = userInformation["maxRating"];
+    var maxRank = userInformation["maxRank"];
+    rating.innerHTML = '';
+
+    var rankColorReference = {
+        "не в рейтинге": 'white',
+        "новичок": 'gray',
+        "ученик": 'green',
+        "специалист": '#03a89e',
+        "эксперт": 'blue',
+        "кандидат в мастера": 'violet',
+        "мастер": 'orange',
+        "международный мастер": 'orange',
+        "гроссмейстер": 'red',
+        "международный гроссмейстер": 'red',
+        "легендарный гроссмейстер": 'red'
+    };
+
+    if (contestList.length == 0) {
+        $('#rank_display').css('color', 'white').text("N/A");
+        $('#max_rating_display').css('color', 'white').text("N/A");
+        $('#max_rank_display').css('color', 'white').text("");
+        $('#current_rank_display').css('color', 'white').text("(не в рейтинге)");
+    } else {
+        $('#rank_display').css('color', rankColorReference[currentRank]).text(currentRating);
+        $('#max_rating_display').css('color', rankColorReference[maxRank]).text(maxRating);
+        $('#max_rank_display').css('color', rankColorReference[maxRank]).text("(" + capitalize(maxRank) + ")");
+        $('#current_rank_display').css('color', rankColorReference[currentRank]).text("(" + capitalize(currentRank) + ")");
+    }
+}
+
+
+function getAllArchiveProblems(rating, userSubmits) {
+    if (rating < 800 || rating == undefined) {
+        rating = 800;
+        estimatedUserRating = 800;
+    }
+
+    $.ajax({
+        url: baseApiUrl + "problemset.problems",
+        type: "get",
+        dataType: "json",
+        async: true,
+        success: function(data, status) {
+            completeProblemSet = data.result.problems;
+            displayProblemCards(completeProblemSet, userSubmits);
+        }
+    });
+}
+
+
+function displayProblemCards(completeProblemSet, userSubmits) {
     // Function to print recommended problems of all tags
-    $.get(baseApiUrl + "problemset.problems")
-        .done(function (data, status) {
-            if (status != "success" || data["status"] != "OK") {
-                alertMessageAndResetProblems("Проверьте подключение к интернету!");
-                return;
+
+    var totalNoProb = completeProblemSet.length;
+    var setOfProb = new Set(); // To store and search the problems being recommended
+    var getProblemUrl = "https://codeforces.com/contest/";
+    var notAttemptedProblems = [];
+
+    // Creates array of problems, of the tag provided in input, NOT attempted by the user
+    for (var i = 0; i < totalNoProb; i++) {
+        if (!userSubmits.includes(completeProblemSet[i].contestId + "_" + completeProblemSet[i].name)) {
+            notAttemptedProblems.push(completeProblemSet[i]);
+        }
+    }
+
+    completeProblemSet = notAttemptedProblems; // Modifies completeProblemSet to contain only those problems NOT attempted by the user
+    totalNoProb = completeProblemSet.length;
+
+    problemDifficultyLevels = ["Easy", "Medium", "Hard"];
+
+    var roundRatingDelta = estimatedUserRating % 100
+    if (roundRatingDelta < 50) roundRatingDelta = estimatedUserRating - roundRatingDelta;
+    else roundRatingDelta = estimatedUserRating + 100 - roundRatingDelta;
+
+    for (var index in problemDifficultyLevels) {
+        var low, high;
+        if (index == 0) {
+            low = easyLow(roundRatingDelta) + roundRatingDelta;
+            high = easyHigh(roundRatingDelta) + roundRatingDelta;
+        }
+        else if (index == 1) {
+            low = mediumLow(roundRatingDelta) + roundRatingDelta;
+            high = mediumHigh(roundRatingDelta) + roundRatingDelta;
+        }
+        else {
+            low = hardLow(roundRatingDelta) + roundRatingDelta;
+            high = hardHigh(roundRatingDelta) + roundRatingDelta;
+        }
+
+        // Generate five random problems
+        var checks = 0;
+        var ctr = 1;
+
+        var cardDiv = document.getElementById(problemDifficultyLevels[index])
+
+        while (ctr <= Math.min(5, totalNoProb)) {
+            checks += 1;
+            // Sometimes, there may not be even 2 problems with the desired rating requirement, so we have to break the loop forcefully
+            if (checks > 1000 * totalNoProb) {
+                break;
             }
-            var completeProblemSet = data.result.problems;
-            // A precautionary check, since we only pass those tags which the user has attempted, thus being sure that the tag itself exists!
-            if (completeProblemSet.length == 0) {
-                alertMessageAndResetProblems("Нет рекомендованных задач");
-                return;
+            // Generate a random index
+            var idx = Math.floor(Math.random() * totalNoProb);
+            if (!setOfProb.has(idx) && completeProblemSet[idx]["rating"] <= high && completeProblemSet[idx]["rating"] >= low) {
+                if (ctr == 1) {
+                    // Only print the heading if at least 1 problem of that rating is found in the problemset!
+                    var heading = '<h2 class="recommend"><u>' + problemDifficultyLevels[index] + '</u>:</h2>';
+                    cardDiv.innerHTML += heading;
+                }
+                var problemUrl = getProblemUrl + completeProblemSet[idx].contestId.toString() + "/problem/" + completeProblemSet[idx].index;
+                var problemName = completeProblemSet[idx].name;
+
+                cardDiv.innerHTML += "<p>" + ctr + ". </p>" + "<a href=" + problemUrl + " target=_blank>" + problemName + "</a>" + "<p> (" + completeProblemSet[idx].rating + ")</p><br>";
+                setOfProb.add(idx);
+                ctr++;
             }
-
-            var totalNoProb = completeProblemSet.length;
-            var setOfProb = new Set(); // To store and search the problems being recommended
-            var getProblemUrl = "https://codeforces.com/contest/";
-            var notAttemptedProblems = [];
-
-            // Creates array of problems, of the tag provided in input, NOT attempted by the user
-            for (var i = 0; i < totalNoProb; i++) {
-                if (!userSubmits.includes(completeProblemSet[i].contestId + "_" + completeProblemSet[i].name)) {
-                    notAttemptedProblems.push(completeProblemSet[i]);
-                }
-            }
-
-            completeProblemSet = notAttemptedProblems; // Modifies completeProblemSet to contain only those problems NOT attempted by the user
-            totalNoProb = completeProblemSet.length;
-
-            problemDifficultyLevels = ["Easy", "Medium", "Hard"];
-
-            var roundRatingDelta = estimatedUserRating % 100
-            if (roundRatingDelta < 50) roundRatingDelta = estimatedUserRating - roundRatingDelta;
-            else roundRatingDelta = estimatedUserRating + 100 - roundRatingDelta;
-
-            for (var index in problemDifficultyLevels) {
-                var low, high;
-                if (index == 0) {
-                    low = easyLow(roundRatingDelta) + roundRatingDelta;
-                    high = easyHigh(roundRatingDelta) + roundRatingDelta;
-                }
-                else if (index == 1) {
-                    low = mediumLow(roundRatingDelta) + roundRatingDelta;
-                    high = mediumHigh(roundRatingDelta) + roundRatingDelta;
-                }
-                else {
-                    low = hardLow(roundRatingDelta) + roundRatingDelta;
-                    high = hardHigh(roundRatingDelta) + roundRatingDelta;
-                }
-
-                // Generate five random problems
-                var checks = 0;
-                var ctr = 1;
-
-                var cardDiv = document.getElementById(problemDifficultyLevels[index])
-
-                while (ctr <= Math.min(5, totalNoProb)) {
-                    checks += 1;
-                    // Sometimes, there may not be even 2 problems with the desired rating requirement, so we have to break the loop forcefully
-                    if (checks > 1000 * totalNoProb) {
-                        break;
-                    }
-                    // Generate a random index
-                    var idx = Math.floor(Math.random() * totalNoProb);
-                    if (!setOfProb.has(idx) && completeProblemSet[idx]["rating"] <= high && completeProblemSet[idx]["rating"] >= low) {
-                        if (ctr == 1) {
-                            // Only print the heading if at least 1 problem of that rating is found in the problemset!
-                            var heading = '<h2 class="recommend"><u>' + problemDifficultyLevels[index] + '</u>:</h2>';
-                            cardDiv.innerHTML += heading;
-                        }
-                        var problemUrl = getProblemUrl + completeProblemSet[idx].contestId.toString() + "/problem/" + completeProblemSet[idx].index;
-                        var problemName = completeProblemSet[idx].name;
-
-                        cardDiv.innerHTML += "<p>" + ctr + ". </p>" + "<a href=" + problemUrl + " target=_blank>" + problemName + "</a>" + "<p> (" + completeProblemSet[idx].rating + ")</p><br>";
-                        setOfProb.add(idx);
-                        ctr++;
-                    }
-                }
-            }
-        })
-        .fail(function (data, status) {
-            // If it fails due to too frequent calls to the API (error 429), call it again
-            displayProblemCards(rating, userSubmits)
-        });
+        }
+    }
 }
 
 
@@ -431,48 +428,74 @@ $(document).ready(function () {
 
     $('#handle-form').on("submit", function (event) {
         resetPage();
+        
         handle = $('#handle-input').val()
-        $.get(baseApiUrl + "user.rating", { 'handle': handle })
-            .done(function (data, status) {
-                contestList = data.result.reverse();
 
-                $('#alert_message').hide();
-                $('#display_block').show();
-                $('#handle_display').text(handle);
-                $('#contest_display').text(contestList.length);
-                $('#recm_handle').text(handle);
-                $('#nocontests').hide();
-                $('#chart').show();
+        var userExists = false;
 
-                if (contestList.length == 0) {
-                    $('#nocontests').show();
-                    $('#chart').hide();
+        $.ajax({
+            url: baseApiUrl + "user.rating",
+            data: {"handle": handle},
+            type: "get",
+            dataType: "json",
+            async: false,
+            success: function(data) {
+                console.log(data.status);
+                if (data.status == "OK") {
+                    contestList = data.result.reverse();
+                    userExists = true;
+                } else {
+                    userExists = false;
                 }
+            },
+            fail: function(data) {
+                userExists = false;
+            }
+        });
 
-                for (var i = 0; i < Math.min(5, contestList.length); i++) {
-                    estimatedUserRating += contestList[i].newRating;
-                }
+        if (!userExists) {
+            $('#display_block').hide();
+            $('#alert_message').show();
+            $('#chart').hide();
+            $('#nocontests').show();
+            return false;
+        } else {
+            $('#display_block').show();
+            $('#alert_message').hide();
+        }
 
-                if (contestList.length != 0) {
-                    estimatedUserRating /= Math.min(5, contestList.length);
-                }
+        $('#handle_display').text(handle);
+        $('#contest_display').text(contestList.length);
+        $('#recm_handle').text(handle);
+        $('#nocontests').hide();
+        $('#chart').show();
 
-                estimatedUserRating = Math.round(estimatedUserRating);
+        if (contestList.length == 0) {
+            $('#nocontests').show();
+            $('#chart').hide();
+        }
 
-                var userSubmissions = getUserSubmissions(handle);
+        for (var i = 0; i < Math.min(5, contestList.length); i++) {
+            estimatedUserRating += contestList[i].newRating;
+        }
 
-                var userAttemptedProblems = parseAttemptedProblems(userSubmissions);
-                var userAcceptedTags = parseSubmissionsIntoTags(userSubmissions);
+        if (contestList.length != 0) {
+            estimatedUserRating /= Math.min(5, contestList.length);
+        }
 
-                drawChart(userAcceptedTags);
+        estimatedUserRating = Math.round(estimatedUserRating);
 
-                displayProfileAndProblems(userAcceptedTags, userAttemptedProblems);
-                displayContests();
-            })
-            .fail(function (data, status) {
-                $('#display_block').hide();
-                $('#alert_message').show();
-            })
+        var userSubmissions = getUserSubmissions(handle);
+
+        var userAttemptedProblems = parseAttemptedProblems(userSubmissions);
+        var userAcceptedTags = parseSubmissionsIntoTags(userSubmissions);
+
+        var completeUserInformation = getUserInfo(handle);
+
+        displayUserProfile(completeUserInformation);
+        getAllArchiveProblems(completeUserInformation.rating, userAttemptedProblems);
+        drawChart(userAcceptedTags);
+        displayContests();
 
         event.preventDefault();
     });
