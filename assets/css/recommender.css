@@ -3,23 +3,21 @@ body {
     background-color: #181818;
 }
 
-.head {
+header {
     display: flex;
     flex-direction: column;
     margin-top: 10px;
     padding: 0;
-    background-color: #292929;
-    border-radius: 5px;
     width: 80%;
+}
+
+header h2 {
+    color: #bbbbbb;
+    font-size: 35px;
 }
 
 h1, h2, h3, h4, h5, h6, b {
     color: #bbbbbb;
-}
-
-.head h2 {
-    color: #bbbbbb;
-    font-size: 35px;
 }
 
 p {
@@ -75,13 +73,14 @@ tr {
     color: red;
 }
 
-.recommendations {
-    margin-top: 20px;
-    padding: 10px;
+.card {
+    background-color: #292929;
+    margin-bottom: 20px;
 }
 
-.card {
-    margin-top: 20px;
+.card.recommendations {
+    padding: 10px;
+    margin-bottom: 20px;
     background-color: #292929;
 }
 
@@ -115,7 +114,7 @@ a:hover {
     color: #bbbbbb;
 }
 
-button {
+input.submit {
     background-color: #3483eb;
     margin: 0;
 }
@@ -129,3 +128,13 @@ input {
     width: 100%;
     height: 100%;
 }
+
+div.container.block, div.container.recent {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+h3.text-center {
+    margin-bottom: 10px;
+}
+
