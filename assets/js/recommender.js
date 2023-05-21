@@ -298,6 +298,9 @@ function getAllArchiveProblems(rating, userSubmits) {
         success: function(data, status) {
             completeProblemSet = data.result.problems;
             displayProblemCards(completeProblemSet, userSubmits);
+        },
+        fail: function(data, status) {
+            getAllArchiveProblems(rating, userSubmits);
         }
     });
 }
@@ -375,7 +378,6 @@ function displayProblemCards(completeProblemSet, userSubmits) {
 
 
 function drawChart(userAcceptedTags) {
-    console.log(userAcceptedTags);
     $('#tags').removeClass('hidden');
     var tagTable = [];
     for (var tag in userAcceptedTags) {
@@ -428,7 +430,6 @@ $(document).ready(function () {
 
     $('#handle-form').on("submit", function (event) {
         resetPage();
-        
         handle = $('#handle-input').val()
 
         var userExists = false;
@@ -440,7 +441,6 @@ $(document).ready(function () {
             dataType: "json",
             async: false,
             success: function(data) {
-                console.log(data.status);
                 if (data.status == "OK") {
                     contestList = data.result.reverse();
                     userExists = true;
