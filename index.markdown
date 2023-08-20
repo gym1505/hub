@@ -7,8 +7,7 @@ title: Хаб спортпроги 1505
 ## **Учебные ресурсы**
 
 - [Что такое спортпрога и с чем ее едят](https://algocode.ru/page/how_to_start/)
-- [Algolympiad (работа Семена Шевкунова)](https://simonshevkunov.github.io/algolympiad.github.io/)
-- [CppTutor (работа Семена Шевкунова)](https://cpptutorweb.github.io/)
+- [Algolympiad (работа Семена Шевкунова)](https://szewk.github.io/algo/)
 - [Алгоритмика](https://ru.algorithmica.org)
 - [E-maxx](https://e-maxx.ru/algo/)
 - [Algocode (Тинькофф)](https://wiki.algocode.ru/index.php?title=%D0%97%D0%B0%D0%B3%D0%BB%D0%B0%D0%B2%D0%BD%D0%B0%D1%8F_%D1%81%D1%82%D1%80%D0%B0%D0%BD%D0%B8%D1%86%D0%B0)
