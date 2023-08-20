@@ -1,19 +1,26 @@
 <script>
     let url = "https://codeforces.com/api/user.info?handles=";
     let handles = "{{ include.cfhandles }}";
+
     console.log("[INFO] Resulting requested handles: " + handles);
     url = url + handles;
     console.log("[INFO] Resulting GET request link: " + url);
+
     async function load() {
         let obj = await (await fetch(url)).json();
         for (let cur_user of obj["result"]) {
             let cur_handle = cur_user["handle"];
             let user_rating = cur_user["rating"];
             if (user_rating == undefined) {
-                user_rating = "не в рейтинге";
+                user_rating = "не в рейтинге"; // unrated
             }
-            document.getElementById(cur_handle.toLowerCase()).innerHTML = document.getElementById(cur_handle.toLowerCase()).innerHTML.replace("загружаю рейтинг...", user_rating);
+
+            // replacing "loading rating..." with the actual rating from the API
+            var currentUserRatingText = document.getElementById(cur_handle.toLowerCase()).innerHTML;
+            var newUserRatingText = currentUserRatingText.replace("загружаю рейтинг...", user_rating);
+            document.getElementById(cur_handle.toLowerCase()).innerHTML = newUserRatingText;
         }
     }
+
     load();
 </script>

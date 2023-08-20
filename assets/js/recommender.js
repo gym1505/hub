@@ -1,8 +1,7 @@
 var contestList;
 const baseApiUrl = "https://codeforces.com/api/";
-var rating = 'none';
-var levels = [];
-var handle = 'none';
+var rating = NaN;
+var handle = undefined;
 var estimatedUserRating = 0;
 
 
@@ -80,50 +79,32 @@ class Contest {
 
 
 function easyLow(x) {
-    x /= 100;
-    var low = -21.2 + (25.5 * Math.exp(-0.02 * x));
-    low *= 100;
-    return low;
+    return x - 200;
 }
 
 
 function easyHigh(x) {
-    x /= 100;
-    var high = -32.1 + (37.2 * Math.exp(-0.01 * x));
-    high *= 100;
-    return high;
+    return x;
 }
 
 
 function mediumLow(x) {
-    x /= 100;
-    var low = -38.8 + (44.8 * Math.exp(-0.008 * x));
-    low *= 100;
-    return low;
+    return x;
 }
 
 
 function mediumHigh(x) {
-    x /= 100;
-    var high = -53.2 + (59.9 * Math.exp(-0.005 * x));
-    high *= 100;
-    return high;
+    return x + 200;
 }
 
 
 function hardLow(x) {
-    x /= 100;
-    var low = -32.0 + (39.9 * Math.exp(-0.008 * x));
-    low *= 100;
-    return low;
+    return x + 200;
 }
 
 
 function hardHigh(x) {
-    x /= 100;
-    var high = -30.8 + (39.6 * Math.exp(-0.006 * x));
-    high *= 100;
-    return high;
+    return x + 500;
 }
 
 
@@ -151,15 +132,17 @@ function displayContests() {
     for (var x of contestList) {
         if (++count > 3) break;
         $('#contestlist').append(
-            '<div class="card">' +
-            '<div class="card-body">' +
-            '<h4><a href="https://codeforces.com/contest/' + x.contestId + '">' + x.contestName + '</a></h4>' +
-            '<table class="table table-bordered">' +
-            '<tbody id="' + x.contestId + '">' +
-            '</tbody>' +
-            '</table>' +
-            '</div>' +
-            '</div>');
+            '<div class="card">'
+            + '<div class="card-body">'
+            + '<h4><a href="https://codeforces.com/contest/'
+            + x.contestId + '">' + x.contestName + '</a></h4>'
+            + '<table class="table table-bordered">'
+            + '<tbody id="' + x.contestId + '">'
+            + '</tbody>'
+            + '</table>'
+            + '</div>'
+            + '</div>');
+
         displayProblemsInContest(x.contestId);
     }
 }
@@ -182,7 +165,7 @@ function getUserSubmissions(handle) {
             submissions = data.result; // unpacking and removing the status
         },
         fail: function(data) {
-            getUserSubmissions(handle);
+            getUserSubmissions(handle); // repeat the request as the input validation has happened already
         }
     });
 
@@ -190,7 +173,7 @@ function getUserSubmissions(handle) {
 }
 
 
-function parseAttemptedProblems(userSubmissions) {
+function getAttemptedProblems(userSubmissions) {
     var attemptedProblems = [];
 
     for (var i = 0; i < userSubmissions.length; i++) {
@@ -212,7 +195,7 @@ function parseSubmissionsIntoTags(userSubmissions) {
     for (var i = 0; i < userSubmissions.length; i++) {
         if (userAttemptedProblems.includes(userSubmissions[i].problem.contestId + "_" + userSubmissions[i].problem.name)) continue;
         userAttemptedProblems.push(userSubmissions[i].problem.contestId + "_" + userSubmissions[i].problem.name); // Array of attempted problems, with problems defined as 'contestId_NameOfProb'
-        var currentProblemTags = userSubmissions[i].problem.tags; // All tags associated with the problem
+        var currentProblemTags = userSubmissions[i].problem.tags; // all tags associated with the problem
         for (var t = 0; t < currentProblemTags.length; t++) {
             if (userSubmissions[i].verdict == 'OK') {
                 if (userAcceptedTags[currentProblemTags[t]] === undefined) userAcceptedTags[currentProblemTags[t]] = 1;
@@ -271,13 +254,13 @@ function displayUserProfile(userInformation) {
     };
 
     if (contestList.length == 0) {
-        $('#rank_display').css('color', 'white').text("N/A");
         $('#max_rating_display').css('color', 'white').text("N/A");
+        $('#rank_display').css('color', 'white').text("N/A");
         $('#max_rank_display').css('color', 'white').text("");
         $('#current_rank_display').css('color', 'white').text("(не в рейтинге)");
     } else {
-        $('#rank_display').css('color', rankColorReference[currentRank]).text(currentRating);
         $('#max_rating_display').css('color', rankColorReference[maxRank]).text(maxRating);
+        $('#rank_display').css('color', rankColorReference[currentRank]).text(currentRating);
         $('#max_rank_display').css('color', rankColorReference[maxRank]).text("(" + capitalize(maxRank) + ")");
         $('#current_rank_display').css('color', rankColorReference[currentRank]).text("(" + capitalize(currentRank) + ")");
     }
@@ -326,39 +309,42 @@ function displayProblemCards(completeProblemSet, userSubmits) {
 
     problemDifficultyLevels = ["Easy", "Medium", "Hard"];
 
-    var roundRatingDelta = estimatedUserRating % 100
+    var roundRatingDelta = estimatedUserRating % 100 // finding the rounded user rating
     if (roundRatingDelta < 50) roundRatingDelta = estimatedUserRating - roundRatingDelta;
-    else roundRatingDelta = estimatedUserRating + 100 - roundRatingDelta;
+    else roundRatingDelta = estimatedUserRating - roundRatingDelta + 100;
 
-    for (var index in problemDifficultyLevels) {
+
+    for (var currentProblemDifficultyLevel of problemDifficultyLevels) {
         var low, high;
-        if (index == 0) {
-            low = easyLow(roundRatingDelta) + roundRatingDelta;
-            high = easyHigh(roundRatingDelta) + roundRatingDelta;
+        if (currentProblemDifficultyLevel == "Easy") {
+            low = easyLow(roundRatingDelta);
+            high = easyHigh(roundRatingDelta);
         }
-        else if (index == 1) {
-            low = mediumLow(roundRatingDelta) + roundRatingDelta;
-            high = mediumHigh(roundRatingDelta) + roundRatingDelta;
+        else if (currentProblemDifficultyLevel == "Medium") {
+            low = mediumLow(roundRatingDelta);
+            high = mediumHigh(roundRatingDelta);
         }
         else {
-            low = hardLow(roundRatingDelta) + roundRatingDelta;
-            high = hardHigh(roundRatingDelta) + roundRatingDelta;
+            low = hardLow(roundRatingDelta);
+            high = hardHigh(roundRatingDelta);
         }
 
         // Generate five random problems
         var checks = 0;
         var ctr = 1;
 
-        var cardDiv = document.getElementById(problemDifficultyLevels[index])
+        var cardDiv = document.getElementById(currentProblemDifficultyLevel)
 
         while (ctr <= Math.min(5, totalNoProb)) {
             checks += 1;
-            // Sometimes, there may not be even 2 problems with the desired rating requirement, so we have to break the loop forcefully
+            // Sometimes there may not be even 2 problems with the desired rating requirement, so we have to break the loop forcefully
             if (checks > 1000 * totalNoProb) {
                 break;
             }
+
             // Generate a random index
             var idx = Math.floor(Math.random() * totalNoProb);
+            
             if (!setOfProb.has(idx) && completeProblemSet[idx]["rating"] <= high && completeProblemSet[idx]["rating"] >= low) {
                 if (ctr == 1) {
                     // Only print the heading if at least 1 problem of that rating is found in the problemset!
@@ -387,9 +373,9 @@ function drawChart(userAcceptedTags) {
         return b[1] - a[1];
     });
     tags = new google.visualization.DataTable();
+    tags.addRows(tagTable);
     tags.addColumn('string', 'Tag');
     tags.addColumn('number', 'solved');
-    tags.addRows(tagTable);
     var tagOptions = {
         width: $('#tags').width(),
         height: $('#tags').height(),
@@ -475,6 +461,7 @@ $(document).ready(function () {
             $('#chart').hide();
         }
 
+        // computing the rating based on last 5 contest performances
         for (var i = 0; i < Math.min(5, contestList.length); i++) {
             estimatedUserRating += contestList[i].newRating;
         }
@@ -487,7 +474,7 @@ $(document).ready(function () {
 
         var userSubmissions = getUserSubmissions(handle);
 
-        var userAttemptedProblems = parseAttemptedProblems(userSubmissions);
+        var userAttemptedProblems = getAttemptedProblems(userSubmissions);
         var userAcceptedTags = parseSubmissionsIntoTags(userSubmissions);
 
         var completeUserInformation = getUserInfo(handle);
