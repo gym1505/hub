@@ -138,3 +138,10 @@ h3.text-center {
     margin-bottom: 10px;
 }
 
+u {
+    text-decoration: none;
+}
+
+#nocontests {
+    display: none;
+}

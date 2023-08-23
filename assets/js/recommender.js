@@ -1,8 +1,7 @@
-var contestList;
 const baseApiUrl = "https://codeforces.com/api/";
-var rating = NaN;
-var handle = undefined;
 var estimatedUserRating = 0;
+
+// TODO: обрабатывать ошибки из fetch
 
 
 // Google Charts embed constants
@@ -15,19 +14,19 @@ var googleChartColors = ['#f44336', '#E91E63', '#9C27B0', '#673AB7', '#2196F3', 
 
 
 function resetPage() {
-    $('#handle_display').text(handle)
+    document.getElementById("handle_display").textContent = "";
 
-    $('#Easy').text('')
-    $('#Medium').text('')
-    $('#Hard').text('')
+    document.getElementById("Easy").textContent = "";
+    document.getElementById("Medium").textContent = "";
+    document.getElementById("Hard").textContent = "";
 
-    $('#rank_display').text("");
-    $('#max_rating_display').text("");
-    $('#max_rank_display').text("");
-    $('#current_rank_display').text("");
+    document.getElementById("rank_display").textContent = "";
+    document.getElementById("rating_display").textContent = "";
+    document.getElementById("max_rank_display").textContent = "";
+    document.getElementById("max_rating_display").textContent = "";
     
-    $('#alert_message').hide();
-    $('#display_block').show();
+    document.getElementById("alert_message").style.display = "none";
+    document.getElementById("display_block").style.display = "none";
 
     estimatedUserRating = 0;
     tags = {};
@@ -54,8 +53,8 @@ class Problem {
 
 class Contest {
     constructor(data) {
-        var problems = data.result.problems;
-        var rows = data.result.rows;
+        var problems = data.problems;
+        var rows = data.rows;
 
         this.problems = [];
         for (var i = 0; i < problems.length; i++) {
@@ -94,44 +93,51 @@ function mediumLow(x) {
 
 
 function mediumHigh(x) {
-    return x + 200;
+    return Math.min(3500, x + 200);
 }
 
 
 function hardLow(x) {
-    return x + 200;
+    return Math.min(3500, x + 200);
 }
 
 
 function hardHigh(x) {
-    return x + 500;
+    return Math.min(3500, x + 500);
 }
 
 
-function displayProblemsInContest(contestId) {
-    $.get(baseApiUrl + "contest.standings", { 'handles': handle, 'contestId': contestId, 'showUnofficial': true, 'lang': 'ru'})
-        .done(function (data, status) {
-            var contest = new Contest(data)
-            for (var x of contest.problems) {
-                $('#' + contestId).append('<tr class="' + x.css + '">' +
-                    '<td>' + x.index + '</td>' +
-                    '<td>' + x.name + '</td>' +
-                    '<td>' + x.verdict + '</td>' +
-                    '</tr>');
-            }
-        })
-        .fail(function (data, status) {
-            displayProblemsInContest(contestId);
-        })
+async function displayProblemsInContest(handle, contestId) {
+    let url = baseApiUrl + "contest.standings?handles="
+              + handle + "&contestId=" + contestId
+              + "&showUnofficial=true&lang=ru";
+
+    const response = await fetch(url);
+
+    const data = (await response.json())["result"];
+
+    var contest = new Contest(data);
+
+    for (var x of contest.problems) {
+        document.getElementById(contestId).innerHTML += ('<tr class="' + x.css + '">' +
+            '<td>' + x.index + '</td>' +
+            '<td>' + x.name + '</td>' +
+            '<td>' + x.verdict + '</td>' +
+            '</tr>');
+    }
 }
 
 
-function displayContests() {
+function displayContests(handle, contestList) {
     var count = 0;
-    $('#contestlist *').remove()
+
+    for (const displayedContest of document.querySelectorAll("#contestlist > div")) {
+        displayedContest.remove();
+    }
+
     for (var x of contestList) {
         if (++count > 3) break;
-        $('#contestlist').append(
+        document.getElementById('contestlist').innerHTML += (
             '<div class="card">'
             + '<div class="card-body">'
             + '<h4><a href="https://codeforces.com/contest/'
@@ -143,33 +149,29 @@ function displayContests() {
             + '</div>'
             + '</div>');
 
-        displayProblemsInContest(x.contestId);
+        displayProblemsInContest(handle, x.contestId);
     }
 }
 
+async function fetchDataFromCodeforcesAPI(handle) { // use with .then() in main code
+    const [submissionsResponse, problemsetResponse, infoResponse, contestsResponse] = await Promise.all([
+        fetch(baseApiUrl + "user.status?lang=ru&handle=" + handle),
+        fetch(baseApiUrl + "problemset.problems?lang=ru"),
+        fetch(baseApiUrl + "user.info?lang=ru&handles=" + handle),
+        fetch(baseApiUrl + "user.rating?lang=ru&handle=" + handle)
+    ]);
 
-function getUserSubmissions(handle) {
-    var submissions = null;
-    var submissionsUrl = baseApiUrl + "user.status";
 
-    $.ajax({
-        url: submissionsUrl,
-        data: {
-            lang: "ru",
-            handle: handle,
-        },
-        type: 'get',
-        dataType: 'json',
-        async: false, // critical for the content to load before it is parsed
-        success: function(data) {
-            submissions = data.result; // unpacking and removing the status
-        },
-        fail: function(data) {
-            getUserSubmissions(handle); // repeat the request as the input validation has happened already
-        }
-    });
+    let userExists = (infoResponse.statusText == "OK");
 
-    return submissions;
+    if (!userExists) return [false, {}, {}, {}];
+
+    const submissions = (await submissionsResponse.json())["result"];
+    const problemset = (await problemsetResponse.json())["result"];
+    const info = (await infoResponse.json())["result"][0];
+    const contests = (await contestsResponse.json())["result"];
+
+    return [userExists, submissions, problemset, info, contests];
 }
 
 
@@ -189,7 +191,7 @@ function getAttemptedProblems(userSubmissions) {
 
 
 function parseSubmissionsIntoTags(userSubmissions) {
-    var userAcceptedTags = [];
+    var userAcceptedTags = {};
     var userAttemptedProblems = [];
 
     for (var i = 0; i < userSubmissions.length; i++) {
@@ -204,40 +206,25 @@ function parseSubmissionsIntoTags(userSubmissions) {
         }
     }
 
+
     return userAcceptedTags;
 }
 
 
-function capitalize(str) {
-    return str.replace(/\w\S*/g, function (txt) { return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); });
+function capitalize(string) {
+    return string.replace(/\w\S*/g, function (txt) { return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); });
 }
 
 
-function getUserInfo(handle) {
-    $.ajax({
-        url: baseApiUrl + "user.info",
-        data: {'handles': handle, 'lang': 'ru'},
-        type: 'get',
-        dataType: 'json',
-        async: false,
-        success: function(data, status) {
-            userInformationResponse = data.result;
-        },
-        fail: function(data, status) {
-            userInformationResponse = getUserInfo(handle);
-        }
-    });
-
-    return userInformationResponse[0]; // берем только первого пользователя из массива длиной 1
-}
-
-
-function displayUserProfile(userInformation) {
+function displayUserProfile(userInformation, contestList) {
     var currentRating = userInformation["rating"];
     var currentRank = userInformation["rank"];
     var maxRating = userInformation["maxRating"];
     var maxRank = userInformation["maxRank"];
-    rating.innerHTML = '';
+
+    console.log(userInformation);
+
+    document.getElementById("rank_display").innerHTML = "";
 
     var rankColorReference = {
         "не в рейтинге": 'white',
@@ -254,38 +241,23 @@ function displayUserProfile(userInformation) {
     };
 
     if (contestList.length == 0) {
-        $('#max_rating_display').css('color', 'white').text("N/A");
-        $('#rank_display').css('color', 'white').text("N/A");
-        $('#max_rank_display').css('color', 'white').text("");
-        $('#current_rank_display').css('color', 'white').text("(не в рейтинге)");
-    } else {
-        $('#max_rating_display').css('color', rankColorReference[maxRank]).text(maxRating);
-        $('#rank_display').css('color', rankColorReference[currentRank]).text(currentRating);
-        $('#max_rank_display').css('color', rankColorReference[maxRank]).text("(" + capitalize(maxRank) + ")");
-        $('#current_rank_display').css('color', rankColorReference[currentRank]).text("(" + capitalize(currentRank) + ")");
-    }
-}
-
-
-function getAllArchiveProblems(rating, userSubmits) {
-    if (rating < 800 || rating == undefined) {
-        rating = 800;
-        estimatedUserRating = 800;
+        maxRank = "не в рейтинге";
+        currentRank = "не в рейтинге";
+        maxRating = "N/A";
+        currentRating = "N/A";
     }
 
-    $.ajax({
-        url: baseApiUrl + "problemset.problems",
-        type: "get",
-        dataType: "json",
-        async: true,
-        success: function(data, status) {
-            completeProblemSet = data.result.problems;
-            displayProblemCards(completeProblemSet, userSubmits);
-        },
-        fail: function(data, status) {
-            getAllArchiveProblems(rating, userSubmits);
-        }
-    });
+    // setting colors
+    document.getElementById("max_rating_display").style.color = rankColorReference[maxRank];
+    document.getElementById("max_rank_display").style.color = rankColorReference[maxRank];
+    document.getElementById("rating_display").style.color = rankColorReference[currentRank];
+    document.getElementById("rank_display").style.color = rankColorReference[currentRank];
+
+    // setting values
+    document.getElementById("max_rating_display").innerHTML = maxRating;
+    document.getElementById("max_rank_display").innerHTML = "(" + capitalize(maxRank) + ")";
+    document.getElementById("rating_display").innerHTML = currentRating;
+    document.getElementById("rank_display").innerHTML = "(" + capitalize(currentRank) + ")";
 }
 
 
@@ -312,6 +284,9 @@ function displayProblemCards(completeProblemSet, userSubmits) {
     var roundRatingDelta = estimatedUserRating % 100 // finding the rounded user rating
     if (roundRatingDelta < 50) roundRatingDelta = estimatedUserRating - roundRatingDelta;
     else roundRatingDelta = estimatedUserRating - roundRatingDelta + 100;
+
+    roundRatingDelta = Math.max(800, roundRatingDelta)
+    roundRatingDelta = Math.min(3500, roundRatingDelta);
 
 
     for (var currentProblemDifficultyLevel of problemDifficultyLevels) {
@@ -342,13 +317,13 @@ function displayProblemCards(completeProblemSet, userSubmits) {
                 break;
             }
 
-            // Generate a random index
+            // Generate a random index for a problemset problem
             var idx = Math.floor(Math.random() * totalNoProb);
             
             if (!setOfProb.has(idx) && completeProblemSet[idx]["rating"] <= high && completeProblemSet[idx]["rating"] >= low) {
                 if (ctr == 1) {
                     // Only print the heading if at least 1 problem of that rating is found in the problemset!
-                    var heading = '<h2 class="recommend"><u>' + problemDifficultyLevels[index] + '</u>:</h2>';
+                    var heading = '<h2 class="recommend"><u>' + currentProblemDifficultyLevel + '</u>:</h2>';
                     cardDiv.innerHTML += heading;
                 }
                 var problemUrl = getProblemUrl + completeProblemSet[idx].contestId.toString() + "/problem/" + completeProblemSet[idx].index;
@@ -364,7 +339,7 @@ function displayProblemCards(completeProblemSet, userSubmits) {
 
 
 function drawChart(userAcceptedTags) {
-    $('#tags').removeClass('hidden');
+    document.getElementById('tags').classList.remove('hidden');
     var tagTable = [];
     for (var tag in userAcceptedTags) {
         tagTable.push([tag + ": " + userAcceptedTags[tag], userAcceptedTags[tag]]);
@@ -372,13 +347,16 @@ function drawChart(userAcceptedTags) {
     tagTable.sort(function (a, b) {
         return b[1] - a[1];
     });
+
     tags = new google.visualization.DataTable();
-    tags.addRows(tagTable);
+
     tags.addColumn('string', 'Tag');
     tags.addColumn('number', 'solved');
+    tags.addRows(tagTable); // important to add the rows after the columns are defined
+
     var tagOptions = {
-        width: $('#tags').width(),
-        height: $('#tags').height(),
+        width: document.getElementById('tags').width,
+        height: document.getElementById('tags').height,
         chartArea: { width: '100%', height: '100%' },
         pieSliceText: 'none',
         legend: {
@@ -404,61 +382,39 @@ function drawChart(userAcceptedTags) {
 }
 
 
-$(document).ready(function () {
-    rating = document.getElementById("rank_display");
-
-    $('#handle-input').keypress(function (e) {
-        if (e.which == 13) {
-          $('#handle-form').submit();
-          return false;
-        }
-    });
-
-    $('#handle-form').on("submit", function (event) {
+window.addEventListener("load", function () {
+    document.getElementById("handle-form").onsubmit = (async function (event) {
+        event.preventDefault();
         resetPage();
-        handle = $('#handle-input').val()
+        var handle = document.getElementById("handle-input").value;
 
-        var userExists = false;
-
-        $.ajax({
-            url: baseApiUrl + "user.rating",
-            data: {"handle": handle},
-            type: "get",
-            dataType: "json",
-            async: false,
-            success: function(data) {
-                if (data.status == "OK") {
-                    contestList = data.result.reverse();
-                    userExists = true;
-                } else {
-                    userExists = false;
-                }
-            },
-            fail: function(data) {
-                userExists = false;
-            }
-        });
+        let [userExists, userSubmissions, problemsetData, userInfoData, contestsData] = await fetchDataFromCodeforcesAPI(handle);
+        console.log(userExists);
 
         if (!userExists) {
-            $('#display_block').hide();
-            $('#alert_message').show();
-            $('#chart').hide();
-            $('#nocontests').show();
+            document.getElementById('display_block').style.display = "none";
+            document.getElementById('chart').style.visibility = "hidden";
+            document.getElementById('alert_message').style.display = "block";
+            document.getElementById('nocontests').style.display = "block";
             return false;
         } else {
-            $('#display_block').show();
-            $('#alert_message').hide();
+            document.getElementById('alert_message').style.display = "none";
+            document.getElementById('display_block').style.display = "block";
         }
 
-        $('#handle_display').text(handle);
-        $('#contest_display').text(contestList.length);
-        $('#recm_handle').text(handle);
-        $('#nocontests').hide();
-        $('#chart').show();
 
+        contestList = contestsData.reverse();
+
+        document.getElementById('handle_display').innerHTML = handle;
+        document.getElementById('contest_display').innerHTML = contestList.length;
+        document.getElementById('recm_handle').innerHTML = handle;
+        document.getElementById('nocontests').style.display = "none";
+        document.getElementById('chart').style.display = "block";
+
+    
         if (contestList.length == 0) {
-            $('#nocontests').show();
-            $('#chart').hide();
+            document.getElementById('nocontests').style.display = "block";
+            document.getElementById('chart').style.display = "none";
         }
 
         // computing the rating based on last 5 contest performances
@@ -472,18 +428,12 @@ $(document).ready(function () {
 
         estimatedUserRating = Math.round(estimatedUserRating);
 
-        var userSubmissions = getUserSubmissions(handle);
-
         var userAttemptedProblems = getAttemptedProblems(userSubmissions);
         var userAcceptedTags = parseSubmissionsIntoTags(userSubmissions);
 
-        var completeUserInformation = getUserInfo(handle);
-
-        displayUserProfile(completeUserInformation);
-        getAllArchiveProblems(completeUserInformation.rating, userAttemptedProblems);
+        displayProblemCards(problemsetData["problems"], userAttemptedProblems);
+        displayUserProfile(userInfoData, contestList);
         drawChart(userAcceptedTags);
-        displayContests();
-
-        event.preventDefault();
+        displayContests(handle, contestList);
     });
-});
+}, false);
