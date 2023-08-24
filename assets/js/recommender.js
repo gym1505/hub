@@ -2,10 +2,9 @@ const baseApiUrl = "https://codeforces.com/api/";
 var estimatedUserRating = 0;
 
 // TODO: обрабатывать ошибки из fetch
-
+// TODO: анимация загрузки на кнопке
 
 // Google Charts embed constants
-var tags = {};
 google.charts.load('current', { 'packages': ['corechart', 'calendar'] });
 
 var googleChartColors = ['#f44336', '#E91E63', '#9C27B0', '#673AB7', '#2196F3', '#009688',
@@ -29,7 +28,6 @@ function resetPage() {
     document.getElementById("display_block").style.display = "none";
 
     estimatedUserRating = 0;
-    tags = {};
 }
 
 
@@ -113,7 +111,6 @@ async function displayProblemsInContest(handle, contestId) {
               + "&showUnofficial=true&lang=ru";
 
     const response = await fetch(url);
-
     const data = (await response.json())["result"];
 
     var contest = new Contest(data);
@@ -161,7 +158,6 @@ async function fetchDataFromCodeforcesAPI(handle) { // use with .then() in main 
         fetch(baseApiUrl + "user.rating?lang=ru&handle=" + handle)
     ]);
 
-
     let userExists = (infoResponse.statusText == "OK");
 
     if (!userExists) return [false, {}, {}, {}];
@@ -205,7 +201,6 @@ function parseSubmissionsIntoTags(userSubmissions) {
             }
         }
     }
-
 
     return userAcceptedTags;
 }
@@ -279,7 +274,7 @@ function displayProblemCards(completeProblemSet, userSubmits) {
     completeProblemSet = notAttemptedProblems; // Modifies completeProblemSet to contain only those problems NOT attempted by the user
     totalNoProb = completeProblemSet.length;
 
-    problemDifficultyLevels = ["Easy", "Medium", "Hard"];
+    let problemDifficultyLevels = ["Easy", "Medium", "Hard"];
 
     var roundRatingDelta = estimatedUserRating % 100 // finding the rounded user rating
     if (roundRatingDelta < 50) roundRatingDelta = estimatedUserRating - roundRatingDelta;
@@ -348,7 +343,7 @@ function drawChart(userAcceptedTags) {
         return b[1] - a[1];
     });
 
-    tags = new google.visualization.DataTable();
+    let tags = new google.visualization.DataTable();
 
     tags.addColumn('string', 'Tag');
     tags.addColumn('number', 'solved');
@@ -401,7 +396,6 @@ window.addEventListener("load", function () {
             document.getElementById('alert_message').style.display = "none";
             document.getElementById('display_block').style.display = "block";
         }
-
 
         contestList = contestsData.reverse();
 
