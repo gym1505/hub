@@ -27,6 +27,8 @@ function resetPage() {
     document.getElementById("alert_message").style.display = "none";
     document.getElementById("display_block").style.display = "none";
 
+    document.getElementById("handle-submit-button").classList.remove("running");
+
     estimatedUserRating = 0;
 }
 
@@ -381,16 +383,19 @@ window.addEventListener("load", function () {
     document.getElementById("handle-form").onsubmit = (async function (event) {
         event.preventDefault();
         resetPage();
+
+        document.getElementById("handle-submit-button").classList.add("running");
+
         var handle = document.getElementById("handle-input").value;
 
         let [userExists, userSubmissions, problemsetData, userInfoData, contestsData] = await fetchDataFromCodeforcesAPI(handle);
-        console.log(userExists);
 
         if (!userExists) {
             document.getElementById('display_block').style.display = "none";
             document.getElementById('chart').style.visibility = "hidden";
             document.getElementById('alert_message').style.display = "block";
             document.getElementById('nocontests').style.display = "block";
+            document.getElementById("handle-submit-button").classList.remove("running");
             return false;
         } else {
             document.getElementById('alert_message').style.display = "none";
@@ -429,5 +434,7 @@ window.addEventListener("load", function () {
         displayUserProfile(userInfoData, contestList);
         drawChart(userAcceptedTags);
         displayContests(handle, contestList);
+
+        document.getElementById("handle-submit-button").classList.remove("running");
     });
 }, false);
