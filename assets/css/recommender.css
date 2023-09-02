@@ -112,6 +112,7 @@ a {
 
 a:hover {
     color: #bbbbbb;
+    text-decoration: none;
 }
 
 input.submit {
