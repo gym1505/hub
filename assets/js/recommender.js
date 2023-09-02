@@ -2,14 +2,13 @@ const baseApiUrl = "https://codeforces.com/api/";
 var estimatedUserRating = 0;
 
 // TODO: обрабатывать ошибки из fetch
-// TODO: анимация загрузки на кнопке
 
 // Google Charts embed constants
-google.charts.load('current', { 'packages': ['corechart', 'calendar'] });
+google.charts.load("current", { "packages": ["corechart", "calendar"] });
 
-var googleChartColors = ['#f44336', '#E91E63', '#9C27B0', '#673AB7', '#2196F3', '#009688',
-    '#8BC34A', '#CDDC39', '#FFC107', '#FF9800', '#FF5722', '#795548', '#607D8B', '#E65100',
-    '#827717', '#004D40', '#1A237E', '#6200EA', '#3F51B5', '#F50057', '#304FFE', '#b71c1c'];
+var googleChartColors = ["#f44336", "#E91E63", "#9C27B0", "#673AB7", "#2196F3", "#009688",
+    "#8BC34A", "#CDDC39", "#FFC107", "#FF9800", "#FF5722", "#795548", "#607D8B", "#E65100",
+    "#827717", "#004D40", "#1A237E", "#6200EA", "#3F51B5", "#F50057", "#304FFE", "#b71c1c"];
 
 
 function resetPage() {
@@ -118,11 +117,11 @@ async function displayProblemsInContest(handle, contestId) {
     var contest = new Contest(data);
 
     for (var x of contest.problems) {
-        document.getElementById(contestId).innerHTML += ('<tr class="' + x.css + '">' +
-            '<td>' + x.index + '</td>' +
-            '<td>' + x.name + '</td>' +
-            '<td>' + x.verdict + '</td>' +
-            '</tr>');
+        document.getElementById(contestId).innerHTML += ("<tr class='" + x.css + "'>" +
+            "<td>" + x.index + "</td>" +
+            "<td>" + x.name + "</td>" +
+            "<td>" + x.verdict + "</td>" +
+            "</tr>");
     }
 }
 
@@ -136,17 +135,17 @@ function displayContests(handle, contestList) {
 
     for (var x of contestList) {
         if (++count > 3) break;
-        document.getElementById('contestlist').innerHTML += (
-            '<div class="card">'
-            + '<div class="card-body">'
-            + '<h4><a href="https://codeforces.com/contest/'
-            + x.contestId + '">' + x.contestName + '</a></h4>'
-            + '<table class="table table-bordered">'
-            + '<tbody id="' + x.contestId + '">'
-            + '</tbody>'
-            + '</table>'
-            + '</div>'
-            + '</div>');
+        document.getElementById("contestlist").innerHTML += (
+            "<div class='card'>"
+            + "<div class='card-body'>"
+            + "<h4><a href='https://codeforces.com/contest/'"
+            + x.contestId + "'>" + x.contestName + "</a></h4>"
+            + "<table class='table table-bordered'>"
+            + "<tbody id='" + x.contestId + "'>"
+            + "</tbody>"
+            + "</table>"
+            + "</div>"
+            + "</div>");
 
         displayProblemsInContest(handle, x.contestId);
     }
@@ -194,10 +193,10 @@ function parseSubmissionsIntoTags(userSubmissions) {
 
     for (var i = 0; i < userSubmissions.length; i++) {
         if (userAttemptedProblems.includes(userSubmissions[i].problem.contestId + "_" + userSubmissions[i].problem.name)) continue;
-        userAttemptedProblems.push(userSubmissions[i].problem.contestId + "_" + userSubmissions[i].problem.name); // Array of attempted problems, with problems defined as 'contestId_NameOfProb'
+        userAttemptedProblems.push(userSubmissions[i].problem.contestId + "_" + userSubmissions[i].problem.name); // Array of attempted problems, with problems defined as "contestId_NameOfProb"
         var currentProblemTags = userSubmissions[i].problem.tags; // all tags associated with the problem
         for (var t = 0; t < currentProblemTags.length; t++) {
-            if (userSubmissions[i].verdict == 'OK') {
+            if (userSubmissions[i].verdict == "OK") {
                 if (userAcceptedTags[currentProblemTags[t]] === undefined) userAcceptedTags[currentProblemTags[t]] = 1;
                 else userAcceptedTags[currentProblemTags[t]]++;
             }
@@ -224,17 +223,17 @@ function displayUserProfile(userInformation, contestList) {
     document.getElementById("rank_display").innerHTML = "";
 
     var rankColorReference = {
-        "не в рейтинге": 'white',
-        "новичок": 'gray',
-        "ученик": 'green',
-        "специалист": '#03a89e',
-        "эксперт": 'blue',
-        "кандидат в мастера": 'violet',
-        "мастер": 'orange',
-        "международный мастер": 'orange',
-        "гроссмейстер": 'red',
-        "международный гроссмейстер": 'red',
-        "легендарный гроссмейстер": 'red'
+        "не в рейтинге": "white",
+        "новичок": "gray",
+        "ученик": "green",
+        "специалист": "#03a89e",
+        "эксперт": "blue",
+        "кандидат в мастера": "violet",
+        "мастер": "orange",
+        "международный мастер": "orange",
+        "гроссмейстер": "red",
+        "международный гроссмейстер": "red",
+        "легендарный гроссмейстер": "red"
     };
 
     if (contestList.length == 0) {
@@ -320,7 +319,7 @@ function displayProblemCards(completeProblemSet, userSubmits) {
             if (!setOfProb.has(idx) && completeProblemSet[idx]["rating"] <= high && completeProblemSet[idx]["rating"] >= low) {
                 if (ctr == 1) {
                     // Only print the heading if at least 1 problem of that rating is found in the problemset!
-                    var heading = '<h2 class="recommend"><u>' + currentProblemDifficultyLevel + '</u>:</h2>';
+                    var heading = "<h2 class='recommend'><u>" + currentProblemDifficultyLevel + "</u>:</h2>";
                     cardDiv.innerHTML += heading;
                 }
                 var problemUrl = getProblemUrl + completeProblemSet[idx].contestId.toString() + "/problem/" + completeProblemSet[idx].index;
@@ -336,7 +335,7 @@ function displayProblemCards(completeProblemSet, userSubmits) {
 
 
 function drawChart(userAcceptedTags) {
-    document.getElementById('tags').classList.remove('hidden');
+    document.getElementById("tags").classList.remove("hidden");
     var tagTable = [];
     for (var tag in userAcceptedTags) {
         tagTable.push([tag + ": " + userAcceptedTags[tag], userAcceptedTags[tag]]);
@@ -347,34 +346,37 @@ function drawChart(userAcceptedTags) {
 
     let tags = new google.visualization.DataTable();
 
-    tags.addColumn('string', 'Tag');
-    tags.addColumn('number', 'solved');
+    tags.addColumn("string", "Tag");
+    tags.addColumn("number", "solved");
     tags.addRows(tagTable); // important to add the rows after the columns are defined
 
     var tagOptions = {
-        width: document.getElementById('tags').width,
-        height: document.getElementById('tags').height,
-        chartArea: { width: '100%', height: '100%' },
-        pieSliceText: 'none',
+        width: document.getElementById("tags").width,
+        height: document.getElementById("tags").height,
+        chartArea: {
+            width: "100%",
+            height: "100%"
+        },
+        pieSliceText: "none",
         legend: {
-            position: 'right',
-            alignment: 'center',
+            position: "right",
+            alignment: "center",
             textStyle: {
                 fontSize: 12,
-                fontName: 'Nunito',
-                color: '#bbbbbb'
+                fontName: "Nunito",
+                color: "#bbbbbb"
             }
         },
         pieHole: 0.5,
         tooltip: {
-            text: 'percentage'
+            text: "percentage"
         },
-        fontName: 'Nunito',
-        backgroundColor: '#292929',
-        color: '#bbbbbb',
+        fontName: "Nunito",
+        backgroundColor: "#292929",
+        color: "#bbbbbb",
         colors: googleChartColors.slice(0, Math.min(googleChartColors.length, tags.getNumberOfRows())),
     };
-    var tagChart = new google.visualization.PieChart(document.getElementById('tags'));
+    var tagChart = new google.visualization.PieChart(document.getElementById("tags"));
     tagChart.draw(tags, tagOptions);
 }
 
@@ -391,29 +393,29 @@ window.addEventListener("load", function () {
         let [userExists, userSubmissions, problemsetData, userInfoData, contestsData] = await fetchDataFromCodeforcesAPI(handle);
 
         if (!userExists) {
-            document.getElementById('display_block').style.display = "none";
-            document.getElementById('chart').style.visibility = "hidden";
-            document.getElementById('alert_message').style.display = "block";
-            document.getElementById('nocontests').style.display = "block";
+            document.getElementById("display_block").style.display = "none";
+            document.getElementById("chart").style.visibility = "hidden";
+            document.getElementById("alert_message").style.display = "block";
+            document.getElementById("nocontests").style.display = "block";
             document.getElementById("handle-submit-button").classList.remove("running");
             return false;
         } else {
-            document.getElementById('alert_message').style.display = "none";
-            document.getElementById('display_block').style.display = "block";
+            document.getElementById("alert_message").style.display = "none";
+            document.getElementById("display_block").style.display = "block";
         }
 
         contestList = contestsData.reverse();
 
-        document.getElementById('handle_display').innerHTML = handle;
-        document.getElementById('contest_display').innerHTML = contestList.length;
-        document.getElementById('recm_handle').innerHTML = handle;
-        document.getElementById('nocontests').style.display = "none";
-        document.getElementById('chart').style.display = "block";
+        document.getElementById("handle_display").innerHTML = handle;
+        document.getElementById("contest_display").innerHTML = contestList.length;
+        document.getElementById("recm_handle").innerHTML = handle;
+        document.getElementById("nocontests").style.display = "none";
+        document.getElementById("chart").style.display = "block";
 
     
         if (contestList.length == 0) {
-            document.getElementById('nocontests').style.display = "block";
-            document.getElementById('chart').style.display = "none";
+            document.getElementById("nocontests").style.display = "block";
+            document.getElementById("chart").style.display = "none";
         }
 
         // computing the rating based on last 5 contest performances
