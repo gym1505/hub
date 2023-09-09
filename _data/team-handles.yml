@@ -1,34 +1,26 @@
 - handle: avkonyahin
-  name: Александр Коняхин
+  name: Александр Валерьевич Коняхин
   status: преп
 
 - handle: ad_red
   name: Александр Максимов
   status: создатель раундов
 
-- handle: masham
-  name: Мария Мурашко
-  status: старшая сборная
-
 - handle: anyaakak
   name: Анна Калюжная
-  status: старшая сборная
-
-- handle: adbogomolov
-  name: Алексей Богомолов
   status: старшая сборная
 
 - handle: baradavka
   name: Кирилл Батухтин
   status: старшая сборная
 
+- handle: adbogomolov
+  name: Алексей Богомолов
+  status: старшая сборная | CTF
+
 - handle: syrexfn
   name: Антон Жданов
-  status: старшая сборная
-
-- handle: szymon_szewk
-  name: Семен Шевкунов
-  status: младшая сборная
+  status: старшая сборная | CTF
 
 - handle: cdasha
   name: Дарья Яшенина
