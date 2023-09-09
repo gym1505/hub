@@ -1,7 +1,6 @@
-const baseApiUrl = "https://codeforces.com/api/";
+const BASEAPIURL = "https://codeforces.com/api/";
 var estimatedUserRating = 0;
 
-// TODO: обрабатывать ошибки из fetch
 
 // Google Charts embed constants
 google.charts.load("current", { "packages": ["corechart", "calendar"] });
@@ -9,6 +8,15 @@ google.charts.load("current", { "packages": ["corechart", "calendar"] });
 var googleChartColors = ["#f44336", "#E91E63", "#9C27B0", "#673AB7", "#2196F3", "#009688",
     "#8BC34A", "#CDDC39", "#FFC107", "#FF9800", "#FF5722", "#795548", "#607D8B", "#E65100",
     "#827717", "#004D40", "#1A237E", "#6200EA", "#3F51B5", "#F50057", "#304FFE", "#b71c1c"];
+
+
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1)); // find a random index on the prefix
+        [array[i], array[j]] = [array[j], array[i]]; // swap the elements
+    }
+    return array;
+}
 
 
 function resetPage() {
@@ -82,7 +90,7 @@ function easyLow(x) {
 
 
 function easyHigh(x) {
-    return x;
+    return x - 1;
 }
 
 
@@ -92,7 +100,7 @@ function mediumLow(x) {
 
 
 function mediumHigh(x) {
-    return Math.min(3500, x + 200);
+    return Math.min(3499, x + 199);
 }
 
 
@@ -102,12 +110,12 @@ function hardLow(x) {
 
 
 function hardHigh(x) {
-    return Math.min(3500, x + 500);
+    return Math.min(3500, x + 499);
 }
 
 
 async function displayProblemsInContest(handle, contestId) {
-    let url = baseApiUrl + "contest.standings?handles="
+    let url = BASEAPIURL + "contest.standings?handles="
               + handle + "&contestId=" + contestId
               + "&showUnofficial=true&lang=ru";
 
@@ -153,10 +161,10 @@ function displayContests(handle, contestList) {
 
 async function fetchDataFromCodeforcesAPI(handle) { // use with .then() in main code
     const [submissionsResponse, problemsetResponse, infoResponse, contestsResponse] = await Promise.all([
-        fetch(baseApiUrl + "user.status?lang=ru&handle=" + handle),
-        fetch(baseApiUrl + "problemset.problems?lang=ru"),
-        fetch(baseApiUrl + "user.info?lang=ru&handles=" + handle),
-        fetch(baseApiUrl + "user.rating?lang=ru&handle=" + handle)
+        fetch(BASEAPIURL + "user.status?lang=ru&handle=" + handle),
+        fetch(BASEAPIURL + "problemset.problems?lang=ru"),
+        fetch(BASEAPIURL + "user.info?lang=ru&handles=" + handle),
+        fetch(BASEAPIURL + "user.rating?lang=ru&handle=" + handle)
     ]);
 
     let userExists = (infoResponse.statusText == "OK");
@@ -260,20 +268,20 @@ function displayUserProfile(userInformation, contestList) {
 function displayProblemCards(completeProblemSet, userSubmits) {
     // Function to print recommended problems of all tags
 
-    var totalNoProb = completeProblemSet.length;
+    var problemsetArchiveLength = completeProblemSet.length;
     var setOfProb = new Set(); // To store and search the problems being recommended
     var getProblemUrl = "https://codeforces.com/contest/";
     var notAttemptedProblems = [];
 
     // Creates array of problems, of the tag provided in input, NOT attempted by the user
-    for (var i = 0; i < totalNoProb; i++) {
+    for (var i = 0; i < problemsetArchiveLength; i++) {
         if (!userSubmits.includes(completeProblemSet[i].contestId + "_" + completeProblemSet[i].name)) {
             notAttemptedProblems.push(completeProblemSet[i]);
         }
     }
 
     completeProblemSet = notAttemptedProblems; // Modifies completeProblemSet to contain only those problems NOT attempted by the user
-    totalNoProb = completeProblemSet.length;
+    problemsetArchiveLength = completeProblemSet.length;
 
     let problemDifficultyLevels = ["Easy", "Medium", "Hard"];
 
@@ -284,51 +292,37 @@ function displayProblemCards(completeProblemSet, userSubmits) {
     roundRatingDelta = Math.max(800, roundRatingDelta)
     roundRatingDelta = Math.min(3500, roundRatingDelta);
 
+    let problemSelectionMapping = {"Easy": [], "Medium": [], "Hard": []};
+
+    for (let currentProblem of completeProblemSet) { // new problems only
+        if (currentProblem["rating"] >= easyLow(roundRatingDelta) && currentProblem["rating"] <= easyHigh(roundRatingDelta)) {
+            problemSelectionMapping["Easy"].push(currentProblem);
+        } else if (currentProblem["rating"] >= mediumLow(roundRatingDelta) && currentProblem["rating"] <= mediumHigh(roundRatingDelta)) {
+            problemSelectionMapping["Medium"].push(currentProblem);
+        } else if (currentProblem["rating"] >= hardLow(roundRatingDelta) && currentProblem["rating"] <= hardHigh(roundRatingDelta)) {
+            problemSelectionMapping["Hard"].push(currentProblem);
+        }
+    }
+
 
     for (var currentProblemDifficultyLevel of problemDifficultyLevels) {
-        var low, high;
-        if (currentProblemDifficultyLevel == "Easy") {
-            low = easyLow(roundRatingDelta);
-            high = easyHigh(roundRatingDelta);
-        }
-        else if (currentProblemDifficultyLevel == "Medium") {
-            low = mediumLow(roundRatingDelta);
-            high = mediumHigh(roundRatingDelta);
-        }
-        else {
-            low = hardLow(roundRatingDelta);
-            high = hardHigh(roundRatingDelta);
+        problemSelectionMapping[currentProblemDifficultyLevel] = shuffle(problemSelectionMapping[currentProblemDifficultyLevel]);
+
+
+        var cardDiv = document.getElementById(currentProblemDifficultyLevel);
+
+        if (problemSelectionMapping[currentProblemDifficultyLevel].length > 0) {
+            // only print the heading if at least 1 problem of that level is found in the problemset
+            var heading = "<h2 class='recommend'><u>" + currentProblemDifficultyLevel + "</u>:</h2>";
+            cardDiv.innerHTML += heading;
         }
 
-        // Generate five random problems
-        var checks = 0;
-        var ctr = 1;
+        for (let i = 0; i < Math.min(5, problemSelectionMapping[currentProblemDifficultyLevel].length); i++) {
+            let currentProblem = problemSelectionMapping[currentProblemDifficultyLevel][i]
+            var problemUrl = getProblemUrl + currentProblem.contestId.toString() + "/problem/" + currentProblem.index;
+            var problemName = currentProblem.name;
 
-        var cardDiv = document.getElementById(currentProblemDifficultyLevel)
-
-        while (ctr <= Math.min(5, totalNoProb)) {
-            checks += 1;
-            // Sometimes there may not be even 2 problems with the desired rating requirement, so we have to break the loop forcefully
-            if (checks > 1000 * totalNoProb) {
-                break;
-            }
-
-            // Generate a random index for a problemset problem
-            var idx = Math.floor(Math.random() * totalNoProb);
-            
-            if (!setOfProb.has(idx) && completeProblemSet[idx]["rating"] <= high && completeProblemSet[idx]["rating"] >= low) {
-                if (ctr == 1) {
-                    // Only print the heading if at least 1 problem of that rating is found in the problemset!
-                    var heading = "<h2 class='recommend'><u>" + currentProblemDifficultyLevel + "</u>:</h2>";
-                    cardDiv.innerHTML += heading;
-                }
-                var problemUrl = getProblemUrl + completeProblemSet[idx].contestId.toString() + "/problem/" + completeProblemSet[idx].index;
-                var problemName = completeProblemSet[idx].name;
-
-                cardDiv.innerHTML += "<p>" + ctr + ". </p>" + "<a href=" + problemUrl + " target=_blank>" + problemName + "</a>" + "<p> (" + completeProblemSet[idx].rating + ")</p><br>";
-                setOfProb.add(idx);
-                ctr++;
-            }
+            cardDiv.innerHTML += "<p>" + i + ". </p>" + "<a href=" + problemUrl + " target=_blank>" + problemName + "</a>" + "<p> (" + currentProblem.rating + ")</p><br>";
         }
     }
 }
