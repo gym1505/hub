@@ -161,16 +161,16 @@ function displayContests(handle, contestList) {
 
 async function fetchDataFromCodeforcesAPI(handle) { // use with .then() in main code
     const [submissionsResponse, problemsetResponse, infoResponse, contestsResponse] = await Promise.all([
-        fetch(BASEAPIURL + "user.status?lang=ru&handle=" + handle),
-        fetch(BASEAPIURL + "problemset.problems?lang=ru"),
-        fetch(BASEAPIURL + "user.info?lang=ru&handles=" + handle),
-        fetch(BASEAPIURL + "user.rating?lang=ru&handle=" + handle)
+        fetch(BASEAPIURL + "user.status?lang=ru&handle=" + handle, {method: "GET"}),
+        fetch(BASEAPIURL + "problemset.problems?lang=ru", {method: "GET"}),
+        fetch(BASEAPIURL + "user.info?lang=ru&handles=" + handle, {method: "GET"}),
+        fetch(BASEAPIURL + "user.rating?lang=ru&handle=" + handle, {method: "GET"})
     ]);
 
-    let userExists = (infoResponse.statusText == "OK");
+    let userExists = (infoResponse.ok);
 
-    if (!userExists) return [false, {}, {}, {}];
-
+    if (!userExists) return [false, {}, {}, {}, {}];
+    
     const submissions = (await submissionsResponse.json())["result"];
     const problemset = (await problemsetResponse.json())["result"];
     const info = (await infoResponse.json())["result"][0];
@@ -214,12 +214,6 @@ function parseSubmissionsIntoTags(userSubmissions) {
     return userAcceptedTags;
 }
 
-
-function capitalize(string) {
-    return string.replace(/\w\S*/g, function (txt) { return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); });
-}
-
-
 function displayUserProfile(userInformation, contestList) {
     var currentRating = userInformation["rating"];
     var currentRank = userInformation["rank"];
@@ -259,47 +253,47 @@ function displayUserProfile(userInformation, contestList) {
 
     // setting values
     document.getElementById("max_rating_display").innerHTML = maxRating;
-    document.getElementById("max_rank_display").innerHTML = "(" + capitalize(maxRank) + ")";
+    document.getElementById("max_rank_display").innerHTML = "(" + maxRank + ")";
     document.getElementById("rating_display").innerHTML = currentRating;
-    document.getElementById("rank_display").innerHTML = "(" + capitalize(currentRank) + ")";
+    document.getElementById("rank_display").innerHTML = "(" + currentRank + ")";
 }
 
 
 function displayProblemCards(completeProblemSet, userSubmits) {
     // Function to print recommended problems of all tags
 
-    var problemsetArchiveLength = completeProblemSet.length;
-    var setOfProb = new Set(); // To store and search the problems being recommended
-    var getProblemUrl = "https://codeforces.com/contest/";
     var notAttemptedProblems = [];
 
     // Creates array of problems, of the tag provided in input, NOT attempted by the user
-    for (var i = 0; i < problemsetArchiveLength; i++) {
-        if (!userSubmits.includes(completeProblemSet[i].contestId + "_" + completeProblemSet[i].name)) {
-            notAttemptedProblems.push(completeProblemSet[i]);
+    for (let currentArchiveProblem of completeProblemSet) {
+        if (!userSubmits.includes(currentArchiveProblem.contestId + "_" + currentArchiveProblem.name)) {
+            notAttemptedProblems.push(currentArchiveProblem);
         }
     }
 
-    completeProblemSet = notAttemptedProblems; // Modifies completeProblemSet to contain only those problems NOT attempted by the user
-    problemsetArchiveLength = completeProblemSet.length;
+    problemsetArchiveLength = notAttemptedProblems.length;
 
     let problemDifficultyLevels = ["Easy", "Medium", "Hard"];
 
-    var roundRatingDelta = estimatedUserRating % 100 // finding the rounded user rating
-    if (roundRatingDelta < 50) roundRatingDelta = estimatedUserRating - roundRatingDelta;
-    else roundRatingDelta = estimatedUserRating - roundRatingDelta + 100;
+    var roundedRatingDelta = estimatedUserRating % 100; // finding the rounded user rating
+    var roundedRating;
+    if (roundedRatingDelta < 50) {
+        roundedRating = estimatedUserRating - roundedRatingDelta;
+    } else {
+        roundedRating = estimatedUserRating - roundedRating + 100;
+    }
 
-    roundRatingDelta = Math.max(800, roundRatingDelta)
-    roundRatingDelta = Math.min(3500, roundRatingDelta);
+    roundedRating = Math.max(800, roundedRating);
+    roundedRating = Math.min(3500, roundedRating);
 
     let problemSelectionMapping = {"Easy": [], "Medium": [], "Hard": []};
 
-    for (let currentProblem of completeProblemSet) { // new problems only
-        if (currentProblem["rating"] >= easyLow(roundRatingDelta) && currentProblem["rating"] <= easyHigh(roundRatingDelta)) {
+    for (let currentProblem of notAttemptedProblems) { // new problems only
+        if (currentProblem["rating"] >= easyLow(roundedRating) && currentProblem["rating"] <= easyHigh(roundedRating)) {
             problemSelectionMapping["Easy"].push(currentProblem);
-        } else if (currentProblem["rating"] >= mediumLow(roundRatingDelta) && currentProblem["rating"] <= mediumHigh(roundRatingDelta)) {
+        } else if (currentProblem["rating"] >= mediumLow(roundedRating) && currentProblem["rating"] <= mediumHigh(roundedRating)) {
             problemSelectionMapping["Medium"].push(currentProblem);
-        } else if (currentProblem["rating"] >= hardLow(roundRatingDelta) && currentProblem["rating"] <= hardHigh(roundRatingDelta)) {
+        } else if (currentProblem["rating"] >= hardLow(roundedRating) && currentProblem["rating"] <= hardHigh(roundedRating)) {
             problemSelectionMapping["Hard"].push(currentProblem);
         }
     }
@@ -307,7 +301,6 @@ function displayProblemCards(completeProblemSet, userSubmits) {
 
     for (var currentProblemDifficultyLevel of problemDifficultyLevels) {
         problemSelectionMapping[currentProblemDifficultyLevel] = shuffle(problemSelectionMapping[currentProblemDifficultyLevel]);
-
 
         var cardDiv = document.getElementById(currentProblemDifficultyLevel);
 
@@ -319,7 +312,7 @@ function displayProblemCards(completeProblemSet, userSubmits) {
 
         for (let i = 0; i < Math.min(5, problemSelectionMapping[currentProblemDifficultyLevel].length); i++) {
             let currentProblem = problemSelectionMapping[currentProblemDifficultyLevel][i]
-            var problemUrl = getProblemUrl + currentProblem.contestId.toString() + "/problem/" + currentProblem.index;
+            var problemUrl = "https://codeforces.com/contest/" + currentProblem.contestId.toString() + "/problem/" + currentProblem.index;
             var problemName = currentProblem.name;
 
             cardDiv.innerHTML += "<p>" + i + ". </p>" + "<a href=" + problemUrl + " target=_blank>" + problemName + "</a>" + "<p> (" + currentProblem.rating + ")</p><br>";
@@ -385,6 +378,8 @@ window.addEventListener("load", function () {
         var handle = document.getElementById("handle-input").value;
 
         let [userExists, userSubmissions, problemsetData, userInfoData, contestsData] = await fetchDataFromCodeforcesAPI(handle);
+
+        console.log([userExists, userSubmissions, problemsetData, userInfoData, contestsData]);
 
         if (!userExists) {
             document.getElementById("display_block").style.display = "none";
